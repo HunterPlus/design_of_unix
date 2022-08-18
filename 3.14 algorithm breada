@@ -1,0 +1,26 @@
+        Figure 3.14 Algorithm for Block Read Ahead
+---------------------------------------------------------------------
+algorithm breada        /* block read and read ahead */
+input:  	(1) file system block number for immediate read
+        	(2) file system block number for asynchronous read
+output: buffer containing data for immediate read
+{
+        if (first block not in cache) {
+                get buffer for first block (algorithm getblk);
+                if (buffer data not valid)
+                        initiate disk read;
+        }
+        if (second block not in cache) {
+                get buffer for second block (algorithm getblk)
+                if (buffer data valid)
+                        release buffer (algorithm brelse);
+                else
+                        initiate disk read;
+        }
+        if (first block was originally in cache) {
+                read first block (algorithm bread);
+                return buffer;
+        }
+        sleep(event first buffer contains valid data);
+        return buffer;
+}
