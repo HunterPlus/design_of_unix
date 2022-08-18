@@ -1,0 +1,33 @@
+	Figure 3.4 Algorithm for Buffer Allocation
+--------------------------------------------------------------------------------------------
+algorithm getblk
+input:  file system number
+        block number
+output: locked buffer that can now be used for block
+{
+        while (buffer not found) {
+                if (block in hash queue) {
+                        if (buffer busy) {      /* scenario 5 */
+                                sleep(event buffer becomes free);
+                                continue;       /* back to while loop */
+                        }
+                        mark buffer busy;       /* scenario 1 */
+                        remove buffer from free list;
+                        return buffer;
+                } else {        /* block not on hash queue */
+                        if (there are no buffers on free list) {        /* scenario 4 */
+                                sleep(event any buffer becomes free);
+                                continue;       /* back to while loop */
+                        }
+                        remove buffer from free list;
+                        if (buffer marked for delayed write) {   	/* scenario 3 */
+                                asynchronous write buffer to disk;
+                                continue;       /* back to while loop */
+                        }
+                        /* scenario 2 - found a free buffer */
+                        remove buffer from old hash queue;
+                        put buffer onto new hash queue;
+                        return buffer;
+                }
+        }
+}
