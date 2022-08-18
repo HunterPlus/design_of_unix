@@ -1,0 +1,8 @@
+while (condition is true) 
+	sleep (event: the condition becomes false); 
+set condition true; 
+
+
+set condition false;
+wakeup (event: the condition is ·false);
+
