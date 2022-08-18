@@ -1,0 +1,14 @@
+	Figure 3.15 Algorithm for Writing a Disk Block
+---------------------------------------------------------------------
+algorithm bwrite	/* block write */
+input:	buffer
+output:	none
+{
+	initiate disk write;
+	if (I/O synchronous) {
+		sleep(event I/O complete);
+		release buffer (algorithm brelse);
+	} else if (marked buffer for delayed write)
+		mark buffer to put at head of free list;
+		
+}
