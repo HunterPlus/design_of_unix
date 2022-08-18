@@ -1,0 +1,13 @@
+       	Figure 3.13 Algorithm for Reading a Disk Block
+-------------------------------------------------------------------------------
+algorithm bread         /* block read */
+input:  file system block number
+output: buffer containing data
+{
+        get buffer for block (algorithm getblk);
+        if (buffer data valid)
+                return buffer;
+        initiate disk read;
+        sleep(event disk read complete);
+        return buffer;
+}
