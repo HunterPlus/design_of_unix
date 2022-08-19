@@ -1,0 +1,20 @@
+        Figure 4.4 Releasing an inode
+---------------------------------------------------------------
+algorithm iput          /* release (put) access to in-core inode */
+input:  pointer to in-core inode
+output: none
+{
+        lock inode if not already locked;
+        decrement inode reference ount;
+        if (reference ount == 0) {
+                if (inode link ount == 0) {
+                        free disk blocks for file (algorithm free, section 4.7);
+                        set file type to 0;
+                        free inode (algorithm ifree, section 4.6);
+                }
+                if (file accessed or inode changed or file changed)
+                        update disk inode;
+                put inode on free list;
+        }
+        release inode lock;
+}
