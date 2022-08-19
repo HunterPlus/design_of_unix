@@ -1,0 +1,29 @@
+        Figure 4.3 Algorithm for Allocation of In-Core inodes
+--------------------------------------------------------------------------------
+algorithm iget
+input:  file system inode number
+output: locked inode
+{
+        while (not done) {
+                if (inode in inode cache) {
+                        if (inode locked) {
+                                sleep(event inode becomes unlocked);
+                                continue;       /* loop back to while */
+                        }
+                        /* special processing for mount points (Chapter 5) */
+                        if (inode on inode free list)
+                                remove from free list;
+                        increment inode reference count;
+                        return (inode);
+                }
+                /* inode not in inode cache */
+                if (no inodes on free list)
+                        return (error);
+                remove new inode from free list;
+                reset inode number and file system;
+                remove inode from old hash queue, place on new one;
+                read inode from disk (algorithm bread);
+                initialize inode (e.g. reference count to 1);
+                return (inode);
+        }
+}
