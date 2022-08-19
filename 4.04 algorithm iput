@@ -5,9 +5,9 @@ input:  pointer to in-core inode
 output: none
 {
         lock inode if not already locked;
-        decrement inode reference ount;
-        if (reference ount == 0) {
-                if (inode link ount == 0) {
+        decrement inode reference count;
+        if (reference count == 0) {
+                if (inode link count == 0) {
                         free disk blocks for file (algorithm free, section 4.7);
                         set file type to 0;
                         free inode (algorithm ifree, section 4.6);
