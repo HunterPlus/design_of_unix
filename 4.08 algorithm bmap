@@ -1,0 +1,26 @@
+        Figure 4.8 Conversion of Byte Offset to Block Number in File System
+------------------------------------------------------------------------------------
+algorithm bmap          /* block map of logical file byte offset to file system block */
+input:  (1) inode
+        (2) byte offset
+output: (1) block number in file system
+        (2) byte offset into block
+        (3) bytes of I/O in block
+        (4) read ahead block number
+{
+        calculate logical block number in file from byte offset;
+        calculate start byte in block for I/O;          /* output 2 */
+        calculate number of bytes to copy to user;      /* output 3 */
+        check if read-ahead applicable, mark inode;     /* output 4 */
+        determine level of indirection;
+        while (not at necessary level of indirection) {
+                calculate index into inode or indirect block from 
+                                logical block number in file;
+                get disk block number from inode or indirect block;
+                release buffer from previous disk read, if any (algorithm brelse);
+                if (no more levels of indirection)
+                        return (block number);
+                read indirect disk block (algorithm bread);
+                adjust logical block number in file according to level of indirection;
+        }
+}
