@@ -1,0 +1,26 @@
+        Figure 4.11 Algorithm for Conversion of a Path Name to an inode
+------------------------------------------------------------------------------------
+algorithm namei         /* convert path name to inode */
+input:  path name
+output: locked inode
+{
+        if (path name starts from root)
+                working inode = root inode (algorithm iget);
+        else
+                working inode = current directory inode (algorithm iget);
+        while (there is more path name) {
+                read next path name component from input;
+                verify that working inode is of directory, access permissions OK;
+                if (working inode is of root and component is "..")
+                        continue;       /* loop back to while */
+                read directory (working inode) by repeated use of algorithms
+                        bmap, bread and brelse;
+                if (component matches an entry in directory (working inode)) {
+                        get inode number for matched component;
+                        release working inode (algorithm iput);
+                        working inode = inode of matched component (algorithm iget);
+                } else          /* component not in directory */
+                        return (no inode);
+        }
+        return (working inode);
+}
