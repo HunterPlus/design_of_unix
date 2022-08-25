@@ -45,6 +45,42 @@ void bhinit()
 
 
 
+/*
+ * get an empty block,
+ * not assigned to any particular device
+ */
+struct buf *geteblk()
+{
+        struct buf *bp, *dp;
+        int     s;
+        
+loop:
+        for (dp = &bfreelist[BQUEUES-1]; dp > bfreelist; dp--)
+                if (dp->av_forw != dp)
+                        break;
+        if (dp == bfreelist) {          /* no free blocks */
+                dp->b_flags |= B_WANTED;
+                sleep((caddr_t)dp, PRIBIO+1);
+                goto loop;
+        }
+        bp = dp->av_forw;
+        notavail(bp);
+        if (bp->b_flags & B_DELWRI) {
+                bp->b_flags |= B_ASYNC;
+                bwrite(bp);
+                goto loop;
+        }
+        bp->b_flags = B_BUSY | B_INVAL;
+        bp->b_back->b_forw = bp->b_forw;
+        bp->b_forw->b_back = bp->b_back;
+        bp->b_forw = dp->b_forw;
+        bp->b_back = dp;
+        bp->b_forw->b_back = bp;
+        dp->b_forw = bp;
+        bp->b_dev = (dev_t) NODEV;
+        return (bp);
+}
+
 
 
 
