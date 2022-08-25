@@ -31,6 +31,19 @@ void bhinit()
         for (bp = bufhash, i = 0; i < BUFHSZ; i++, bp++)
                 bp->b_forw = bp->b_back = (struct buf *) bp;
 }
+/*
+ * notavail(bp):
+ * remove buf block from freelist, and
+ * mark it busy.
+ */
+#define notavail(bp) \
+{ \
+        (bp)->av_back->av_forw = (bp)->av_forw; \
+        (bp)->av_forw->av_back = (bp)->av_back; \
+        (bp)->b_flags |= B_BUSY;                \
+}
+
+
 
 
 
