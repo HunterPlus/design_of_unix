@@ -44,6 +44,15 @@ void bhinit()
 }
 
 /*
+ * Release the buffer, start I/O on it, but don't wait for completion.
+ */
+void bawrite(struct buf *bp)
+{
+        bp->b_flags |= B_ASYNC;
+        bwrite(bp);
+}
+
+/*
  * Write the buffer, waiting for completion.
  * Then release the buffer.
  */
