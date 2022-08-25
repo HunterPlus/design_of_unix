@@ -93,3 +93,16 @@ struct nx {     /* arg to real nami */
         struct buf *nbp;
         int     nlink;
 };
+
+typedef long    time_t;
+struct dinode {
+        u_short di_mode;        /* mode and type of file */
+        short   di_nlink;       /* number of links to file */
+        short   di_uid;
+        short   di_gid;
+        off_t   di_size;
+        char    di_addr[40];    /* 39 used; 13 addresses of 3 bytes each. */
+        time_t  di_atime;       /* time last accessed */
+        time_t  di_mtime;       /* time last modified */
+        time_t  di_ctime;       /* time created */        
+};
