@@ -44,6 +44,29 @@ void bhinit()
 }
 
 /*
+ * Write the buffer, waiting for completion.
+ * Then release the buffer.
+ */
+void bwrite(struct buf *bp)
+{
+        int     flag;
+        
+        flag = bp->b_flags;
+        bp->b_flags &= ~(B_READ | B_DONE | B_ERROR | B_DELWRI | B_AGE);
+        bp->b_bcount = BSIZE(bp->b_dev);
+        if ((flag & B_DELWRI) == 0)
+                u.u_vm.vm_oublk++;      /* noone paid yet */
+        (*bdevsw[major(bp->b_dev)].d_strategy)(bp);     /* perform I/O for internal functions */
+        if ((flag & B_ASYNC) == 0) {
+                iowait(bp);
+                brelse(bp);
+        } else if (flag & B_DELWRI)
+                bp->b_flags |= B_AGE;
+        else
+                geterror(bp);
+}
+
+/*
  * release the buffer, with no I/O implied.
  */
 void brelse(struct buf *bp)
