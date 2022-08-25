@@ -123,6 +123,19 @@ void bawrite(struct buf *bp)
 }
 
 /*
+ * Pick up the device's error number and pass it to the user;
+ * if there is an error but the number is 0 set a generalized
+ * code.  Actually the latter is always true because devices
+ * don't yet return specific errors.
+ */
+void geterror(struct buf *bp)
+{
+        if (bp->b_flags & B_ERROR)
+                if ((u.u_error = bp->b_error) == 0)
+                        u.u_error = EIO;
+}
+
+/*
  * Write the buffer, waiting for completion.
  * Then release the buffer.
  */
