@@ -44,6 +44,47 @@ void bhinit()
 }
 
 /*
+ * release the buffer, with no I/O implied.
+ */
+void brelse(struct buf *bp)
+{
+        struct buf *flist;
+        int     s;
+        
+        if (bp->b_flags & B_WANTED)
+                wakeup((caddr_t)bp);    /* someone sleep on this event */
+        if (bfreelist[0].b_flags & B_WANTED) {  /* locked freelist */
+              bfreelist[0].b_flags &= ~B_WANTED;
+              wakeup((caddr_t)bfreelist);
+        }
+        if (bp->b_flags & B_ERROR)
+                if (bp->b_flags & B_LOCKED)
+                        bp->b_flags &= ~B_ERROR;
+                else
+                        bp->b_dev = NODEV;
+        if (bp->b_flags & (B_ERROR | B_INVAL)) {
+                /* block has no info ... put at front of most free list */
+                flist = &bfreelist[BQUEUE - 1];
+                flist->av_forw->av_back = bp;
+                bp->av_forw = flist->av_forw;
+                flist->av_forw = bp;
+                bp->av_back = flist;
+        } else {
+                if (bp->b_flags & B_LOCKED)
+                        flist = &bfreelist[BQ_LOCKED];
+                else if (bp->b_flags & B_AGE)
+                        flist = &bfreelist[BQ_AGE];
+                else
+                        flist = &bfreelist[BQ_LRU];
+                flist->av_back->av_forw = bp;
+                bp->av_back = flist->av_back;
+                flist->av_back = bp;
+                bp->av_forw = flist;
+        }
+        bp->b_flags &= ~(B_WANTED | B_BUSY | B_ASYNC | B_AGE);
+}
+
+/*
  * Assign a buffer for the given block.  If the appropriate
  * block is already associated, return it; otherwise search
  * for the oldest non-busy buffer and reassign it.
