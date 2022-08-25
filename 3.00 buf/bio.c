@@ -44,6 +44,24 @@ void bhinit()
 }
 
 /*
+ * Read in (if necessary) the block and return a buffer pointer.
+ */
+struct buf *bread(dev_t dev, daddr_t blkno)
+{
+        struct buf *bp;
+        
+        bp = getblk(dev, blkno);
+        if (bp->b_flags & B_DONE) 
+                return bp;
+        bp->b_flags |= B_READ;
+        bp->b_bcount = BSIZE(dev);
+        (*bdevsw[major(dev)].d_strategy)(bp);
+        u.u_vm.vm_inblk++;      /* pay for read */
+        iowait(bp);
+        return (bp);
+}
+
+/*
  * Release the buffer, start I/O on it, but don't wait for completion.
  */
 void bawrite(struct buf *bp)
