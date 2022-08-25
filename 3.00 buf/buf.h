@@ -5,7 +5,7 @@
  *	one for buffers containing ``non-useful'' information
  *		(and empty buffers, pushed onto the front)
  */
-typedef int     dev_t;
+typedef unsigned short dev_t;
 typedef char *  caddr_t;                  /* legacy */
 typedef long    daddr_t;
 
