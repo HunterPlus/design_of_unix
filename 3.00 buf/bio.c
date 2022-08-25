@@ -12,6 +12,7 @@
  *	bawrite
  *	brelse
  */
+#define	major(x)	((int)(((unsigned)(x)>>8)&0377))
 
 struct buf bfreelist[BQUEUES];
 struct buf bswlist, *bclnlist;
@@ -179,7 +180,7 @@ void brelse(struct buf *bp)
                         bp->b_dev = NODEV;
         if (bp->b_flags & (B_ERROR | B_INVAL)) {
                 /* block has no info ... put at front of most free list */
-                flist = &bfreelist[BQUEUE - 1];
+                flist = &bfreelist[BQUEUES - 1];
                 flist->av_forw->av_back = bp;
                 bp->av_forw = flist->av_forw;
                 flist->av_forw = bp;
@@ -204,7 +205,7 @@ void brelse(struct buf *bp)
  * block is already associated, return it; otherwise search
  * for the oldest non-busy buffer and reassign it.
  */
-struct buf *getblk(dev_t dev; daddr_t blkno)
+struct buf *getblk(dev_t dev, daddr_t blkno)
 {
         struct buf *bp, *dp, *ep;
         int     dblkno = fsbtodb(dev, blkno);

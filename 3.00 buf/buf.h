@@ -6,7 +6,7 @@
  *		(and empty buffers, pushed onto the front)
  */
 typedef int     dev_t;
-typedef char    *caddr_t;                  /* legacy */
+typedef char *  caddr_t;                  /* legacy */
 typedef long    daddr_t;
 
 struct bufhd {
@@ -18,7 +18,7 @@ struct buf {
         struct buf *b_forw, *b_back;    /* hash chain (2 way street) */
         struct buf *av_forw, *av_back;  /* position on free list if not BUSY */
 
-        long    b_count;                /* transfer count */
+        long    b_bcount;                /* transfer count */
         short   b_error;                /* returned after I/O */
         dev_t   b_dev;                  /* major+minor device name */
         union {
