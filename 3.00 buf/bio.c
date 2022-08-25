@@ -44,6 +44,23 @@ void bhinit()
 }
 
 /*
+ * See if the block is associated with some buffer
+ * (mainly to avoid getting hung up on a wait in breada)
+ */
+int incore(dev_t dev, daddr_t blkno)
+{
+        struct buf *bp, *dp;
+        int     dblkno = fsbtodb(dev, blkno);
+        
+        dp = BUFHASH(dev, dblkno);
+        for (bp = dp->b_forw; bp != dp; bp = bp->b_forw)
+                if (bp->b_blkno == dblkno && bp->b_dev == dev &&
+                                !(bp->b_flags & B_INVAL))
+                        return (1);
+        return (0);
+}
+
+/*
  * Read in the block, like bread, but also start I/O on the
  * read-ahead block (which is not allocated to the caller)
  */
