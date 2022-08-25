@@ -44,6 +44,41 @@ void bhinit()
 }
 
 /*
+ * Read in the block, like bread, but also start I/O on the
+ * read-ahead block (which is not allocated to the caller)
+ */
+struct buf *breada(dev_t dev, daddr_t blkno, daddr_t rablkno)
+{
+        struct buf *bp, *rabp;
+        
+        bp = NULL;
+        if (!incore(dev, blkno)) {
+                bp = getblk(dev, blkno);
+                if ((bp->b_flags & B_DONE) == 0) {
+                        bp->b_flags |= B_READ;
+                        bp->b_bcount = BSIZE(dev);
+                        (*bdevsw[major(dev)].d_strategy)(bp);
+                        u.u_vm.vm_inblk++;
+                }
+        }
+        if (rablkno && !incore(dev, rablkno)) {
+                rabp = getblk(dev, rablkno);
+                if (rabp->b_flags & B_DONE) {
+                        brelse(rabp);
+                } else {
+                        rabp->b_flags |= B_READ | B_ASYNC;
+                        rabp->b_bcount = BSIZE(dev);
+                        (*bdevsw[jajor(dev)].d_strategy)(rabp);
+                        u.u_vm.vm_inblk++;
+                }
+        }
+        if (bp == NULL)
+                return bread(dev, blkno);
+        iowait(bp);
+        return (bp);
+}
+
+/*
  * Read in (if necessary) the block and return a buffer pointer.
  */
 struct buf *bread(dev_t dev, daddr_t blkno)
