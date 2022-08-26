@@ -1,0 +1,16 @@
+        Figure 4.14 Algorithm for Freeing inode
+-------------------------------------------------------------------------
+algorithm ifree         /* inode free */
+input:  file system inode number
+output: none
+{
+        increment file system free inode count;
+        if (super block locked)
+                return;
+        if (inode list full) {
+                if (inode number less than remembered inode for search)
+                        set remembered inode for search = input inode number;
+        } else
+                store inode number in inode list;
+        return;
+}
