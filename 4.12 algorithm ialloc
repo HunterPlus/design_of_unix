@@ -1,0 +1,37 @@
+        Figure 4.12 Algorithm for Assigning New inode
+-------------------------------------------------------------------
+algorithm ialloc        /* allocate inode */
+input:  file system
+output: locked inode
+{
+        while (not done) {
+                if (super block locked) {
+                        sleep(event super block becomes free);
+                        continue;       /* while loop */
+                }
+                if (inode list in super block is empty) {
+                        lock super block;
+                        get remembered inode for free inode search;
+                        search disk for free inodes until super block full,
+                                or no more free indoes (algorithms bread and brelse);
+                        unlock super block;
+                        wake up (event super block becomes free);
+                        if (no free inodes found on disk)
+                                return (no inode);
+                        set remembered inode for next free inode search;
+                }
+                /* there are inodes in super block inode list */
+                get inode number from super block inode list;
+                get inode (algorithm iget);
+                if (inode not free after all) {         /* !!! */
+                        write inode to disk;
+                        release inode (algorithm iput);
+                        continue;       /* while loop */
+                } 
+                /* inode is free */
+                initialize inode;
+                write inode to disk;
+                decrement file system free inode count;
+                return (inode); 
+        }
+}
