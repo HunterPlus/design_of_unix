@@ -28,6 +28,29 @@ void ihinit()
 }
 
 /*
+ * copy disk inode to in-core inode
+ */ 
+void iexpand(struct inode *ip, struct dinode *dp)
+{
+       char     *p1, *p2;
+       int      i;
+       
+       ip->i_mode = dp->di_mode;
+       ip->i_nlink = dp->di_nlink;
+       ip->i_uid = dp->di_uid;
+       ip->i_gid = dp->di_gid;
+       ip->i_size = dp->di_size;
+       p1 = (char *)ip->i_un.i_addr;
+       p2 = (char *)dp->di_addr;
+       for (i = 0; i < NADDR; i++) {    /* daddr_t i_addr, long type array, 4 bytes that time */
+               *p1++ = *p2++;
+               *p1++ = *p2++;
+               *p1++ = *p2++;
+               *p1++ = 0;
+       }
+}
+
+/*
  * Find an inode if it is incore.
  * This is the equivalent, for inodes,  of ``incore'' in bio.c or ``pfind'' in subr.c.
  */
