@@ -183,7 +183,7 @@ done:
                 ip->i_hlink = ifreel;
                 ifreel = x;
                 ip->i_flag = 0;
-                ip->i_number = 0
+                ip->i_number = 0;
         } else if (ip->i_count == 0)
                 panic("i_count == 0");
         else
