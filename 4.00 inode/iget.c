@@ -139,3 +139,55 @@ loop:
         brelse(bp);
         return (ip);
 }
+/*
+ * Decrement reference count of an inode structure.
+ * On the last reference,
+ * write the inode out and if necessary,
+ * truncate and deallocate the file.
+ */
+void iput(struct inode *ip)
+{
+        int     i, x;
+        struct inode *jp;
+        
+        if (ip->i_count == 1) {
+                ip->i_flag |= ILOCK;
+                if (ip->i_nlink <= 0) {
+                        /* fstyp == 0 || t_free == 0 means local disk */
+                        if (!ip->i_fstyp || !fstypsw[ip->i_fstyp].t_free) {
+                                itrunc(ip);
+                                ip->i_mode = 0;
+                                ip->i_flag |= IUPD | ICHG;
+                                ifree(ip->i_dev, ip->i_number);
+                        } else
+                                (*fstypsw[ip->fstyp].t_free)(ip);
+                }
+                if (ip->i_fstyp && fstypsw[ip->i_fstyp].t_put)
+                        (*fstypsw[ip->i_fstyp].t_put)(ip);
+                else
+                        IUPDAT(ip, &time, &time, 0);
+                prele(ip);
+                i = INOHASH(ip->i_dev, ip->i_number, ip->i_fstyp);
+                x = ip - inode;
+                if (inohash[i] == x) {
+                        inohash[i] = ip->i_hlink;
+                } else {
+                        for (jp = &inode[inohash[i]]; jp != &inode[-1]; jp = &inode[jp->i_hlink])
+                                if (jp->i_hlink == x) {
+                                        jp->i_hlink = ip->i_hlink;
+                                        goto done;
+                                }
+                        panic("iput");
+                }
+done:
+                ip->i_hlink = ifreel;
+                ifreel = x;
+                ip->i_flag = 0;
+                ip->i_number = 0
+        } else if (ip->i_count == 0)
+                panic("i_count == 0");
+        else
+                prele(ip);
+        ip->i_count--;
+}
+
