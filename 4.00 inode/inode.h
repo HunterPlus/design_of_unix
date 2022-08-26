@@ -1,6 +1,7 @@
 typedef unsigned char u_char;
 typedef unsigned short u_short;
 
+typedef char * caddr_t;
 typedef long    daddr_t;
 typedef u_short ino_t;
 typedef u_short dev_t;
@@ -11,7 +12,7 @@ typedef long    off_t;
 struct inode {
         short   i_flag;
         u_char  i_count;        /* reference count */
-        char    i_fstype;       /* type of its filesystem */
+        char    i_fstyp;       /* type of its filesystem */
         dev_t   i_dev;          /* device where inode resides */
         long    i_number;       /* i number, 1-to-1 with device address */
         u_short i_mode;

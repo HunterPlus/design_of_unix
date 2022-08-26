@@ -160,7 +160,7 @@ void iput(struct inode *ip)
                                 ip->i_flag |= IUPD | ICHG;
                                 ifree(ip->i_dev, ip->i_number);
                         } else
-                                (*fstypsw[ip->fstyp].t_free)(ip);
+                                (*fstypsw[ip->i_fstyp].t_free)(ip);
                 }
                 if (ip->i_fstyp && fstypsw[ip->i_fstyp].t_put)
                         (*fstypsw[ip->i_fstyp].t_put)(ip);
