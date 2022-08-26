@@ -29,8 +29,7 @@ void ihinit()
 
 /*
  * Find an inode if it is incore.
- * This is the equivalent, for inodes,
- * of ``incore'' in bio.c or ``pfind'' in subr.c.
+ * This is the equivalent, for inodes,  of ``incore'' in bio.c or ``pfind'' in subr.c.
  */
 struct inode *ifind(dev_t dev, ino_t ino, int fstyp)
 {
@@ -42,3 +41,12 @@ struct inode *ifind(dev_t dev, ino_t ino, int fstyp)
         return ((struct inode *)0);
 }
 
+/*
+ * Look up an inode by device,inumber,fstyp.
+ * If it is in core (in the inode structure),  honor the locking protocol.
+ * If it is not in core, read it in from the specified device.
+ * If the inode is mounted on, perform the indicated indirection.
+ * In all cases, a pointer to a locked inode structure is returned.
+ *
+ * panic: no imt -- if the mounted file system is not in the mount table."cannot happen"
+ */
