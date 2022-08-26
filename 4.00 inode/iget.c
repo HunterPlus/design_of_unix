@@ -1,4 +1,5 @@
 #include "inode.h"
+#include "buf.h"
 
 /* kernel */
 struct inode *inode, *inodeNINODE;
@@ -191,3 +192,150 @@ done:
         ip->i_count--;
 }
 
+/*
+ * Check accessed and update flags on an inode structure.
+ * If any is on, update the inode with the current time.
+ * If waitfor is given, then must insure i/o order so wait for write to complete.
+ */
+void iupdat(struct inode *ip, time_t *ta, time_t *tm, int waitfor)
+{
+        struct buf *bp;
+        struct dinode *dp;
+        char    *p1, *p2;
+        int     i;
+
+        if ((ip->i_flag & (IUPD | IACC | ICHG)) != 0) {
+                if (ip->i_fstyp && fstypsw[ip->i_fstyp].t_updat) {
+                        (*fstypsw[ip->i_fstyp].t_update)(ip, ta, tm, waitfor);
+                        return;
+                }
+                if (getfs(ip->i_dev)->s_ronly)
+                        return;
+                bp = bread(ip->i_dev, itod(ip->i_dev, ip->i_number));
+                if (bp->b_flags & B_ERROR) {
+                        brelse(bp);
+                        return;
+                }
+                dp = bp->b_un.b_dino;
+                dp += itoo(ip->i_dev, ip->i_number);
+                dp->di_mode = ip->i_mode;
+                dp->di_nlink = ip->i_nlink;
+                dp->di_uid = ip->i_uid;
+                dp->di_gid = ip->i_gid;
+                dp->di_size = ip->i_size;
+                p1 = (char *)dp->di_addr;
+                p2 = (char *)ip->i_un.i_addr;
+                for (i = 0; i < NADDR; i++) {
+                        *p1++ = *p2++;
+                        *p1++ = *p2++;
+                        *p1++ = *p2++;
+                        if (*p2++)
+                                printf("iaddress > 2^24\n");
+                }
+                if (ip->i_flag & IACC)
+                        dp->di_atime = *ta;
+                if (ip->i_flag & IUPD)
+                        dp->di_mtime = *tm;
+                if (ip->i_flag & ICHG)
+                        dp->di_ctime = time;
+                ip->i_flag &= ~(IUPD | IACC | ICHG);
+                if (waitfor)
+                        bwrite(bp);
+                else
+                        bdwrite(bp);
+        }
+}
+
+void tloop(dev_t dev, daddr_t bn, int f1, int f2)
+{
+        int     i;
+        struct buf *bp;
+        daddr_t *bap;
+        daddr_t nb;
+
+        bp = NULL;
+        for (i = NINDIR(dev)-1; i >= 0; i--) {
+                if (bp == NULL) {
+                        bp = bread(dev, bn);
+                        if (bp->b_flags & B_ERROR) {
+                                brelse(bp);
+                                return;
+                        }
+                        bap = bp->b_un.b_daddr;
+                }
+                nb = bap[i];
+                if (nb == (daddr_t)0)
+                        continue;
+                if (f1) {
+                        brelse(bp);
+                        bp = NULL;
+                        tloop(dev, nb, f2, 0);
+                } else
+                        free(dev, nb);
+        }
+        if (bp != NULL)
+                brelse(bp);
+        free(dev, bn);
+}
+
+/*
+ * Free all the disk blocks associated with the specified inode structure.
+ * The blocks of the file are removed in reverse order. 
+ * This FILO algorithm will tend to maintain a contiguous free list much longer than FIFO.
+ */
+void itrunc(struct inode *ip)
+{
+        int     i;
+        dev_t   dev;
+        daddr_t bn;
+        struct inode itmp;
+
+        i = ip->i_mode & IFMT;
+        if (i!=IFREG && i!=IFDIR && i!=IFLNK)
+                return;
+        if ((i = ip->i_fstyp) && fstypsw[i].t_trunc) {
+                (*fstypsw[i].t_trunc)(ip);
+                return;
+        }
+        /*
+         * clean inode on disk before freeing blocks
+         * to insure no duplicates if system crashes.
+         */
+        itmp = *ip;
+        itmp.i_size = 0;
+        for (i = 0; i < NADDR; i++)
+                itmp.i_un.i_addr[i] = 0;
+        itmp.i_flag |= ICHG | IUPD;
+        iupdat(&itmp, &time, &time, 1);
+        ip->i_flag &= ~(IUPD | IACC | ICHG);
+
+        /*
+         * Now return blocks to free list ... if machine
+         * crashes, they will be harmless MISSING blocks.
+         */
+        dev = ip->i_dev;
+        for (i = NADDR-1; i >= 0; i--) {
+                bn = ip->i_un.i_addr[i];
+                if (bn == (daddr_t)0)
+                        continue;
+                ip->i_un.i_addr[i] = (daddr_t)0;
+                switch(i) {
+                default:
+                        free(dev, bn);
+                        break;
+                case NADDR-3:
+                        tloop(dev, bn, 0, 0);
+                        break;
+                case NADDR-2:
+                        tloop(dev, bn, 1, 0);
+                        break;
+                case NADDR-1:
+                        tloop(dev, bn, 1, 1);
+                }
+        }
+        ip->i_size = 0;
+        /*
+         * inode was written and flags updated above.
+         * No need to modify flags here.
+         */        
+}
