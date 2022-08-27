@@ -1,0 +1,23 @@
+        Figure 4.19 Algorithm for Allocating Disk Block
+---------------------------------------------------------------------------
+algorithm alloc         /* file system block allocation */
+input:  file system number
+output: buffer for new block
+{
+        while (super block locked)
+                sleep(event super block not locked);
+        remove block from super block free list;
+        if (removed last block from free list) {
+                lock super block;
+                read block just taken from free list (algorithm bread);
+                copy block numbers in block into super block;
+                release block buffer (algorithm brelse);
+                unlock super block;
+                wake up processes (event super block not locked);
+        }
+        get buffer for block removed from super block list (algorithm getblk);
+        zero buffer contents;
+        decrement total count of free blocks;
+        mark super block modified;
+        return buffer;
+}
