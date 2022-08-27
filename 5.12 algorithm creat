@@ -1,0 +1,24 @@
+        Figure 5.12 Algorithm for Creating a File
+-----------------------------------------------------------------------------
+algorithm creat 
+input:  file name
+        permission settings
+output: file descriptor
+{
+        get inode for file name (algorithm namei);
+        if (file already exists) {
+                if (not permitted access) {
+                        release inode (algorithm iput);
+                        return (error);
+                }
+        } else {        /* file does not exist yet */
+                assign free inode from file system (algorithm ialloc);
+                create new directory entry in parent directory: include
+                                new file name and newly assigned inode number;
+        }
+        allocate file table entry for inode, initialize count;
+        if (file did exist at time of create)
+                free all file blocks (algorithm free);
+        unlock(inode);
+        return (user file descriptor);
+}
