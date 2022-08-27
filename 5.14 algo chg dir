@@ -1,0 +1,15 @@
+        Figure 5.14 Algorithm for Changing Current directory
+------------------------------------------------------------------------------------------
+algorithm change directory
+input:  new directory name
+output: none
+{
+        get inode for new directory name (algorithm namei);
+        if (inode not that of directory or process not permitted access to file) {
+                release inode (algorithm iput);
+                return (error);
+        }
+        unlock inode;
+        release "old" current directory inode (algorithm iput);
+        place new inode into current directory slot in u area;
+}
