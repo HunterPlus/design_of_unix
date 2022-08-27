@@ -1,0 +1,23 @@
+        Figure 5.18 Reading and Writing a pipe 
+-------------------------------------------------------------------
+#include <unistd.h>
+
+/* int pipe(int pipefd[2]);     */
+char    string[] = "hello";
+int main()
+{
+        char    buf[1024];
+        char    *cp1, *cp2;
+        int     fds[2];
+
+        cp1 = string;
+        cp2 = buf;
+        while (*cp1)
+                *cp2++ = *cp1++;
+        pipe(fds);
+        for(;;) {
+                write(fds[1], buf, 6);          /* buf -> pipe */
+                read(fds[0], buf, 6);           /* pipe -> buf */
+        }
+        return 0;
+}
