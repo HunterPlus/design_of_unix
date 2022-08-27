@@ -1,0 +1,18 @@
+        Figure 5.2 Algorithm for Opening a file
+------------------------------------------------------------------------
+algorithm open 
+inputs: file name
+        type of open
+        file permissions (for creation type of open)
+output: file descriptor
+{
+        convert file name to inode (algorithm namei);
+        if (file does not exist or not permitted access)
+                return (error);
+        allocate file table entry for inode, initialize count, offset;
+        allocate user file descriptor entry, set pointer to file table entry;
+        if (type of open specifies truncate file)
+                free all file blocks (algorithm free);
+        unlock(inode);          /* locked above in namei */
+        return (user file descriptor);
+}
