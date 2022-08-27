@@ -1,0 +1,22 @@
+        Figure 5.7 Sample Program for Reading a file
+--------------------------------------------------------------------------------
+#include <stdio.h>
+#include <fcntl.h>              /* open */
+#include <unistd.h>             /* read */
+
+int main()
+{
+        int     fd;
+        char    lilbuf[11] = {}, bigbuf[25] = {};
+
+        fd = open("/etc/passwd", O_RDONLY);
+        read(fd, lilbuf, 10);
+        printf("%s\n\n", lilbuf);
+        
+        read(fd, bigbuf, 24);
+        printf("%s\n\n", bigbuf);
+        
+        read(fd, lilbuf, 10);
+        printf("%s\n", lilbuf);
+        return 0;
+}
