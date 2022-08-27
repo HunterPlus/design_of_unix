@@ -1,0 +1,24 @@
+        Figure 5.13 Algorithm for Making New Node
+--------------------------------------------------------------------------------------
+algorithm make new node 
+inputs: node (file name)
+        file type
+        permissions
+        major, minor device number (for block, character special files)
+output: none
+{
+        if (new node not named pipe and user not super user)
+                return (error)
+        get inode of parent of new node (algorithm namei);
+        if (new node already exists) {
+                release parent inode (algorithm iput);
+                return (error);
+        }
+        assign free inode from file system for new node (algorithm ialloc);
+        create new directory entry in parent directory: include new node
+                        name and newly assigned inode number;
+        release parent directory inode (algorithm iput);
+        if (new node is block or character special file)
+                write major, minor numbers into inode structure;
+        release new node inode (algorithm iput);
+}
