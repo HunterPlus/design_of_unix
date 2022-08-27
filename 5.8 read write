@@ -1,0 +1,30 @@
+        Figure 5.8 A Reader and a Writer process
+---------------------------------------------------------------------
+#include <fcntl.h>              /* open */
+#include <unistd.h>             /* read, write */
+
+/* process A */
+int main()
+{
+        int     fd;
+        char    buf[512];
+
+        fd = open("/etc/passwd", O_RDONLY);
+        read(fd, buf, sizeof(buf));             /* read1 */
+        read(fd, buf, sizeof(buf));             /* read2 */
+        return 0;
+}
+
+/* process B */
+int main()
+{
+        int     fd, i;
+        char    buf[512];
+
+        for (i = 0; i < sizeof(buf); i++)
+                buf[i] = 'a';
+        fd = open("/etc/passwd", O_WRONLY);
+        write(fd, buf, sizeof(buf));            /* write1 */
+        write(fd, buf, sizeof(buf));            /* write2 */
+        return 0;
+}
