@@ -1,0 +1,30 @@
+        Figure 5.5 Algorithm for Reading a file
+-------------------------------------------------------------------------------
+algorithm read 
+input:  user file descriptor
+        address of buffer in user process
+        number of bytes to read 
+output: ount of bytes copied into user space
+{
+        get file table entry from user file descriptor;
+        check file accessibility;
+        set parameters in u area for user address, byte count, I/O to user;
+        get inode from file table;
+        lock inode;
+        set byte offset in u area from file table offset;
+        while (count not satisfied) {
+                convert file offset to disk block (algorithm bmap);
+                calculate offset into block, number of bytes to read;
+                if (number of bytes to read is 0)
+                        /* trying to read end of file. */
+                        break;          /* out of loop */
+                read block (algorithm breada if with read ahead, algorithm bread otherwise);
+                copy data from system buffer to user address;
+                update u area fields for file byte offset, read count,
+                                        address to write into user space;
+                release buffer;         /* locked in bread */
+        }
+        unlock inode;
+        update file table offset for next read;
+        return (total number of bytes read);
+}
