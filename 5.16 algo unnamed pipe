@@ -1,0 +1,15 @@
+        Figure 5.16 Algorithm for Creation of (Unnamed) Pipes
+---------------------------------------------------------------------------
+algorithm pipe 
+input:  none
+output: read file descriptor
+        write file descriptor
+{
+        assign new inode from pipe device (algorithm ialloc);
+        allocate file table entry for reading, another for writing;
+        initialize file table entries to point to new inode;
+        allocate user file descriptor for reading, another for writing,
+                        initialize to point to respective file table entries;
+        set inode reference count to 2;
+        initialize count of inode readers, wirters to 1;
+}
