@@ -1,0 +1,23 @@
+        Figure 5.10 Program with Lseek System Call 
+--------------------------------------------------------------------
+#include <stdio.h>
+#include <stdlib.h>
+#include <fcntl.h>
+#include <unistd.h>
+
+int main(int argc, char *argv[])
+{
+        int     fd, skval;
+        char    c;
+
+        if (argc != 2)
+                exit(1);
+        if ((fd = open(argv[1], O_RDONLY)) == -1)
+                exit(1);
+        while ((skval = read(fd, &c, 1)) == 1) {
+                printf("char %c\n", c);
+                skval = lseek(fd, 1023L, 1);
+                printf("new seek val %d\n", skval);
+        }
+        return 0;
+}
