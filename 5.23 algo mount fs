@@ -1,0 +1,27 @@
+        Figure 5.23 Algorithm for Mounting a File System
+---------------------------------------------------------------------------------------
+algorithm mount 
+inputs: file name of block special file
+        directory name of mount point
+        options (read only)
+output: none
+{
+        if (not super user)
+                return (error);
+        get inode for block special file (algorithm namei);
+        make legality checks;
+        get inode for "mounted on" directory name (algorithm namei);
+        if (not directory, or reference count > 1) {
+                release inodes (algorithm iput);
+                return (error);
+        }
+        find empty slot in mount table;
+        invoke block device driver open routine;
+        get free buffer from buffer cache;
+        read super block into free buffer;
+        initialize super block fields;
+        get root inode of mounted device (algorithm iget), save in mount table;
+        mark inode of "mounted on" directory as mount point;
+        release special file inode (algorithm iput);
+        unlock inode of mount point directory;
+}
