@@ -1,0 +1,25 @@
+        Figure 5.29 Algorithm for Linking files
+---------------------------------------------------------------------------------
+algorithm link 
+input:  existing file name
+        new file name
+output: none
+{
+        get inode for existing file name (algorithm namei);
+        if (too many links on file or linking directory without super user permission) {
+                release inode (algorithm iput);
+                return (error);
+        }
+        increment link count on inode;
+        update disk copy of inode;
+        unlock inode;
+        get parent inode for directory to contain new file name (algorithm namei);
+        if (new file name already exists or existing file, new file on different file system) {
+                undo update done above;
+                return (error);
+        }
+        create new directory entry in parent directory of new file name:
+                        include new file name, inode number of existing file name;
+        release parent directory inode (algorithm iput);
+        release inode of existing file (algorithm iput);
+}
