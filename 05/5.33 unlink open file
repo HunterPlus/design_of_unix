@@ -1,0 +1,33 @@
+        Figure 5.33 Unlinking an Opened File 
+----------------------------------------------------------------------------
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
+
+int main(int argc, char *argv[])
+{
+        int     fd;
+        char    buf[1024];
+        struct stat statbuf;
+
+        if (argc != 2)          /* need a parameter */
+                exit(1);
+        if ((fd = open(argv[1], O_RDONLY)) == -1)       /* open fails */
+                exit(1);
+        if (unlink(argv[1]) == -1)      /* unlink file just opened */
+                exit(1);
+        if (stat(argv[1], &statbuf) == -1)      /* stat the file by name */
+                printf("stat %s fails as it should\n", argv[1]);
+        else
+                printf("stat %s succeeded!!!!\n", argv[1]);
+        if (fstat(fd, &statbuf) == -1)          /* stat the file by fd */
+                printf("fstat %s fails!!!\n", argv[1]);
+        else
+                printf("fstat %s succeeds as it should\n", argv[1]);
+        while (read(fd, buf, sizeof(buf)) > 0)          /* read open/unlinked file */
+                printf("%1024s", buf);          /* prints 1k byte field */
+        return 0;
+}
