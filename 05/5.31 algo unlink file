@@ -1,0 +1,27 @@
+        Figure 5.31 Algorithm for Unlinking a file
+-----------------------------------------------------------------------------------
+algorithm unlink 
+input:  file name
+output: none
+{
+        get parent inode of file to be unlinked (algorithm namei);
+        /* if unlinking the current directory ... */
+        if (last component of file name is ".")
+                increment inode reference count;
+        else
+                get inode of file to be unlinked (algorithm iget);
+        if (file is directory but user is not super user) {
+                release inodes (algorithm iput);
+                return (error);
+        }
+        if (shared text file and link count currently 1)
+                remove from region table;
+        write parent directory: zero inode number of unlinked file;
+        release inode parent directory (algorithm iput);
+        decrement file link count;
+        release file inode (algorithm iput);
+                /* iput checks if link count is 0: if so,
+                 * release file blocks (algorithm free) and
+                 * frees inode (algorithm ifree);
+                 */
+}
