@@ -1,0 +1,30 @@
+        Figure 5.27 Algorithm for Unmounting a File System
+------------------------------------------------------------------------------------
+algorithm umount 
+input:  special file name of file system to be unmounted
+output: none
+{
+        if (not super user)
+                return (error);
+        get inode of special file (algorithm namei);
+        extract major, minor number of device being unmounted;
+        get mount table entry, based on major, minor number, 
+                        for unmounting file system;
+        release inode of special file (algorithm iput);
+        remove shared text entries from region table for files
+                        belonging to file system;       /* chap 7xxx */
+        update super block, inodes, flush buffers;
+        if (files from file system still in use)
+                return (error);
+        get root inode of mounted file system from mount table;
+        lock inode;
+        release inode (algorithm iput);         /* iget was in mount */
+        invoke close routine for special device;
+        invalidate buffers in pool from unmounted file system;
+        get inode of mount point from mount table;
+        lock inode;
+        clear flag marking it as mount point;
+        release inode (algorithm iput);         /* iget in mount */
+        free buffer used for super block;
+        free mount table slot;
+}
