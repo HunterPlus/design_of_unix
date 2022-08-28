@@ -1,0 +1,33 @@
+        Figure 5.25 Revised Algorithm for Accessing an Inode 
+--------------------------------------------------------------------------------
+algorithm iget
+input:  file system inode number
+output: locked inode
+{
+        while (not done) {
+                if (inode in inode cache) {
+                        if (inode locked) {
+                                sleep(event inode becomes unlocked);
+                                continue;       /* loop */
+                        }
+                        /* special processing for mount points */
+                        if (inode a mount point) {
+                                find mount table entry for mount point;
+                                get new file system number from mount table;
+                                use root inode number in search;
+                                continue;       /* loop again */
+                        }
+                        if (inode on inode free list)
+                                remove from free list;
+                        increment inode reference count;
+                        return (inode);
+                }
+                /* inode not in inode cache */
+                remove new inode from free list;
+                reset inode number and file system;
+                remove inode from old hash queue, place on new one;
+                read inode from disk (algorithm bread);
+                initialize inode (e.g. reference count to 1);
+                return inode;
+        }
+}
