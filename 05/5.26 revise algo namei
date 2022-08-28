@@ -1,0 +1,36 @@
+        Figure 5.26 Revised Algorithm for Parsing a File Name
+--------------------------------------------------------------------------------
+algorithm namei         /* convert path name to inode */
+input:  path name
+output: locked inode
+{
+        if (path name starts from root)
+                working inode = root inode (algorithm iget);
+        else 
+                working inode = current directory inode (algorithm iget);
+        while (there is more path name) {
+                read next path name component from input;
+                verify that inode is of dreictory, permissions;
+                if (inode is of changed root and component is "..")
+                        continue;       /* loop */
+component search:
+                read inode (directory) (algorithms bmap, bread, brelse);
+                if (component matches a drectory entry) {
+                        get inode number for matched component;
+                        if (found inode of root and working inode is root and
+                                        component name is "..") {
+                                /* crossing mount point */
+                                get mount table entry for working inode;
+                                release working inode (algorithm iput);
+                                working inode = mounted on inode;
+                                lock mounted on inode;
+                                increment reference count of working inode;
+                                go to component search (for "..");
+                        }
+                        release working inode (algorithm iput);
+                        working inode = inode for new inode number (algorithm iget);
+                } else          /* component not in directory */
+                        return (no inode);                
+        }                 
+        return (working inode);
+}
