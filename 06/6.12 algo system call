@@ -1,0 +1,18 @@
+        Figure 6.12 Algorithm for System Calls
+----------------------------------------------------------------------------------
+algorithm syscall               /* algorithm for invocation of system call */
+input:  system call number
+outupt: result of system call
+{
+        find entry in system call table corresponding to system call number;
+        determine number of parameters to system call;
+        copy parameters from user address space to u area;
+        save current context for abortive return (described in section 6.4.4);
+        invoke system call code in kernel;
+        if (error during execution of system call) {
+                set register 0 in user save register context to error number;
+                turn on carry bit in PS register in user saved register context;
+        } else
+                set registers 0, 1 in user saved register context
+                                to return values from system call;
+}
