@@ -1,0 +1,12 @@
+        Figure 6.10 Algorithm for Handling Interrupts
+-----------------------------------------------------------------------------------
+algorithm inthand               /* handle interrupts */
+input:  none
+output: none
+{
+        save (push) current context layer;
+        determine interrupt source;
+        find interrupt vertor;
+        call interrupt handler;
+        restore (pop) previous context layer;
+}
