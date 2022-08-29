@@ -2,7 +2,7 @@
 ----------------------------------------------------------------------------------
 algorithm syscall               /* algorithm for invocation of system call */
 input:  system call number
-outupt: result of system call
+output: result of system call
 {
         find entry in system call table corresponding to system call number;
         determine number of parameters to system call;
