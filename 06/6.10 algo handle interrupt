@@ -6,7 +6,7 @@ output: none
 {
         save (push) current context layer;
         determine interrupt source;
-        find interrupt vertor;
+        find interrupt vector;
         call interrupt handler;
         restore (pop) previous context layer;
 }
