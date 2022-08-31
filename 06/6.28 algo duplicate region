@@ -1,0 +1,18 @@
+	Figure 6.28 Algorithm for Dupreg
+-------------------------------------------------------------------------------
+algorithm dupreg		/* duplicate an existing region */
+input:	pointer to region table entry
+output:	pointer to a region that looks identical to input region
+{
+	if (region type shared) 
+		/* caller will increment region reference count 
+		 * with subsequent attachreg call
+		 */
+		return (input region pointer);
+	allocate new region (algorithm allocreg);
+	set up auxiliary memory management structures, as currently
+			exists in input region;
+	allocate physical memory for region contents;
+	"copy" region contents from input region to newly allocated region;
+	return (pointer to allocated region);
+}
