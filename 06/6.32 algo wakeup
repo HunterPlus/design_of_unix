@@ -1,0 +1,21 @@
+	Figure 6.32 Algorithm for Wakeup
+--------------------------------------------------------------------------------
+algorithm wakeup		/* wake up a sleeping process */
+input:	sleep address
+output:	none
+{
+	raise processor execution level to block all interrupts;
+	find sleep hash queue for sleep address;
+	for (every process asleep on sleep address) {
+		remove process from hash queue;
+		mark process state "ready to run";
+		put process on scheduler list of processes ready to run;
+		clear field in process table entry for sleep address;
+		if (process not loaded in memory)
+			wake up swapper process (0);
+		else if (awakened process is more elligible to run than
+				currently running process)
+			set scheduler flag;		
+	}
+	restore processor execution level to original level;
+}
