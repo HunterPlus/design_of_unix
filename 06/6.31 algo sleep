@@ -1,0 +1,39 @@
+	Figure 6.31 Sleep Algorithm
+-------------------------------------------------------------------------------------
+algorithm sleep
+input:	(1) sleep address
+	(2) priority
+output:	1 if process awakened as a result of a signal that process catches,
+	longjump algorithm if process awakened as a result of a signal
+			that it does not catch,
+	0 otherwise;
+{
+	raise process execution level to block all interrupts;
+	set process state to sleep;
+	put process on sleep hash queue, based on sleep address;
+	save sleep address in process table slot;
+	set process priority level to input priority;
+	if (process sleep is NOT interruptible) {
+		do context switch;
+		/* process resumes execution here when it wakes up */
+		reset processor priority level to allow interrupts as when
+				process went to sleep;
+		return (0);
+	}
+	/* here, process sleep is interruptible by signals */
+	if (no signal pending against process) {
+		do context switch;
+		/* process resumes execution here when it wakes up */
+		if (no signal pending against process) {
+			reset processor priority level to what it was when
+					process went to sleep;
+			return (0);
+		}
+	}
+	remove process from sleep hash queue, if still here;
+	
+	reset processor priority level to what it was when process went to sleep;
+	if (process sleep priority set to catch signals)
+		return (1);
+	do longjump algorithm;
+}
