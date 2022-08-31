@@ -6,7 +6,7 @@
 void catcher(int sig)		/* void (*sighandler_t)(int) */
 {
 	if (sig == SIGINT)
-		printf("SIGINT catched\n");
+		printf("SIGINT %d catched\n", SIGINT);
 }
 
 int main()
