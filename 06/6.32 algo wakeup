@@ -13,7 +13,7 @@ output:	none
 		clear field in process table entry for sleep address;
 		if (process not loaded in memory)
 			wake up swapper process (0);
-		else if (awakened process is more elligible to run than
+		else if (awakened process is more eligible to run than
 				currently running process)
 			set scheduler flag;		
 	}
