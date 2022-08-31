@@ -1,4 +1,4 @@
-	Figure Algorithm Detachreg
+	Figure 6.26 Algorithm Detachreg
 --------------------------------------------------------------------------------
 algorithm detachreg		/* detach a region from a process */
 input:	pointer to per process region table entry
