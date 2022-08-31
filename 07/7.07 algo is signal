@@ -1,0 +1,20 @@
+        Figure 7.7 Algorithm for Recognizing Signals 
+---------------------------------------------------------------------------
+algorithm issig                 /* test for receipt of signals */
+input:  none
+output: true, if process received signals that it does not ignore
+        false otherwise
+{
+        while (received signal field in process table entry not 0) {
+                find a signal number sent to the process;
+                if (signal is death of child) {
+                        if (ignoring death of child signals)
+                                free process table entries of zombie children;
+                        else if (catching death of child signals)
+                                return (true);
+                } else if (not ignoring signal)
+                        return (true);
+                turn off signal bit in received signal field in process table;
+        }
+        return (false);
+}
