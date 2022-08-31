@@ -1,0 +1,35 @@
+        Figure 6.13 Creat System Call and Generated Code for Motorola 68000
+--------------------------------------------------------------------------------------------
+        Portions of Generated Motorola 68000 Assembler Code
+/*
+char    name[] = "file";
+int main()
+{
+        int     fd;
+        fd = creat(name, 0666);
+}
+*/
+
+Addr    Instruction
+        .
+        .
+# code for main
+
+58:     mov     &0x1b6, (%sp)           # move 0666 stack
+5e:     mov     &0x204, -(%sp)          # move stack Ptr 
+                                        # and move variable "name" or
+64:     jsr     0x7a                    # call C library for creat
+
+# library code for creat
+7a:     movq    &0x8, %d0               # move data value 8 into data register 0
+7c:     trap    &0x0                    # operating system trap
+7e:     bcc     &0x6 <86>               # brach to addr 86 if carry bit clear
+80:     jmp     0x13c                   # jump to addr 13c
+86:     rts                             # return from subroutine
+
+# library code for errors in system call
+13c:    mov     %d0, &0x20e             # move data reg 0 to location 20e (errno)
+142:    movq    &-0x1, %d0              # move constant -1 into data register 0
+144:    mova    %d0, %a0                
+146:    rts                             # return from subroutine
+

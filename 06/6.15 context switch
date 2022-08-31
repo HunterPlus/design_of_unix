@@ -1,0 +1,8 @@
+        Figure 6.15 Step for a Context Switch 
+----------------------------------------------------------------------
+1.      Decide whether to do a context switch, 
+        and whether a context switch is permissible now.
+2.      Save the context of the "old" process.
+3.      Find the "best" process to schedule for execution,
+        using the process scheduling algorithm in Chapter 8.
+4.      Restore its context.
