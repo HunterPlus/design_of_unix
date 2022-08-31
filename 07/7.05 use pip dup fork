@@ -1,0 +1,47 @@
+        Figure 7.5 Use of Pipe, Dup, and fork
+------------------------------------------------------------------
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <fcntl.h>
+#include <unistd.h>
+
+char    string[] = "hello world";
+int main()
+{
+        int     count, i;
+        int     to_par[2], to_chil[2];          /* for pipes to parent, child */
+        char    buf[256] = {};
+        pipe(to_par);                           /* 0 - read, 1 - write */
+        pipe(to_chil);
+        if (fork() == 0) {                      /* child process executes here */
+                close(0);                       /* close old standard input */
+                dup(to_chil[0]);                /* dup pipe read to standard input */
+                close(1);                       /* close old standard output */
+                dup(to_par[1]);                 /* dup pipe write to standard out */
+                close(to_par[1]);               /* close unnecessary pipe descriptors */
+                close(to_chil[0]);
+                close(to_par[0]);
+                close(to_chil[1]);
+                for (;;) {
+                        if ((count = read(0, buf, sizeof(buf))) == 0)
+                                exit(0);
+                        write(1, buf, count);
+                }
+        }
+        /* parent process executes here */
+        close(1);       /* rearrange standard in, out */
+        dup(to_chil[1]);
+        close(0);
+        dup(to_par[0]);
+        close(to_chil[1]);
+        close(to_par[0]);
+        close(to_chil[0]);
+        close(to_par[1]);
+        for (i = 0; i < 15; i++) {
+                write(1, string, strlen(string));
+                read(0, buf, sizeof(buf));
+        }
+        fprintf(stderr, "%s\n", buf);
+        return 0;
+}
