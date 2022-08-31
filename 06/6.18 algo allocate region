@@ -1,0 +1,15 @@
+	Figure 6.18 Algorithm for Allocating a Region
+------------------------------------------------------------------------------
+algorithm allocreg		/* allocate a region data structure */
+input:	(1) inode pointer
+	(2) region type
+output:	locked region
+{
+	removed region from linked list of free regions;
+	assign region type;
+	assign region inode pointer;
+	if (inode pointer not null)
+		increment inode reference count;
+	place region on linked list of active regions;
+	return (locked region);
+}
