@@ -12,5 +12,5 @@ void catcher(int sig)		/* void (*sighandler_t)(int) */
 int main()
 {
 	signal(SIGINT, catcher);
-	kill(0, SIGINT);		/* send to caller process group */
+	kill(0, SIGINT);		/* 0 - send to caller process group */
 }
