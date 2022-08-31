@@ -1,0 +1,18 @@
+	Figure Algorithm Detachreg
+--------------------------------------------------------------------------------
+algorithm detachreg		/* detach a region from a process */
+input:	pointer to per process region table entry
+output:	none
+{
+	get auxiliary memory managment tables for process,
+			release as appropriate;
+	decreament process size;
+	decreament region reference count;
+	if (region reference count is 0 and region not sticky bit)
+		free region (algorithm freereg);
+	else {		/* either reference count non-0 or region sticky bit on */
+		free inode lock, if applicable (inode associated with region);
+		free region lock;
+	}
+	
+}
