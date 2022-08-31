@@ -8,7 +8,7 @@ output:	none
 	if (region size increasing) {
 		check legality of new region size;
 		allocate auxiliary tables (page tables);
-		if (not system supporinting demand paging) {
+		if (not system supporting demand paging) {
 			allocate physical memory;
 			initialize auxiliary tables, as necessary;
 		}
