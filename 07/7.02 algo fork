@@ -1,0 +1,27 @@
+        Figure 7.2 Algorithm for Fork
+--------------------------------------------------------------------------
+algorithm fork 
+input:  none
+output: to parent process, child PID number
+        to child process, 0
+{
+        check for available kernel resources;
+        get free proc table slot, unique PID number;
+        check that user not running too many processes;
+        mark child state "being created";
+        copy data from parent proc table slot to new child slot;
+        increment counts on current directory inode and changed root (if applicable);
+        increment open file counts in file table;
+        make copy of parent context (u area, text, data, stack) in memory;
+        push dummy system level context layer onto child system level context;
+                        dummy context contains data allowing child process      
+                        to recognize itself, and start running from here
+                        when scheduled;
+        if (executing process is parent process) {
+                changed child state to "ready to run";
+                return (child ID);              /* from system to user */
+        } else {                /* executing process is the child process */
+                initialize u area timing fields;
+                return (0);     /* to user */
+        }
+}
