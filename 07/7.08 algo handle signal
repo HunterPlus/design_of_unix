@@ -1,0 +1,28 @@
+        Figure 7.8 Algorithm for Handling Signals 
+-----------------------------------------------------------------------
+algorithm psig          /* handle signals after recognizing their existence */
+input:  none
+output: none
+{
+        get signal number set in process table entry;
+        clear signal number in process table entry;
+        if (user had called signal sys call to ignore this signal)
+                return;         /* done */
+        if (user specified function to handle the signal) {
+                get user virtual address of signal catcher stored in u area;
+                /* the next statement has undesirable side-effects */
+                clear u area entry that stored address of signal catcher,
+                modify user level context:
+                                artificially create user stack frame to mimic
+                                call to signal catcher function;
+                modify system level context:
+                                write address of signal catcher into program
+                                counter field of user saved register context;
+                return;
+        }
+        if (signal is type that system should dump core image of process) {
+                create file named "core" in current directory;
+                write contents of user level context to file "core";
+        }
+        invoke exit algorithm immediately;
+}
