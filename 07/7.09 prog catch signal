@@ -1,0 +1,16 @@
+	Figure 7.9 Source Code for a Program that Catches Signals
+------------------------------------------------------------------------------------------
+#include <stdio.h>
+#include <signal.h>
+
+void catcher(int sig)		/* void (*sighandler_t)(int) */
+{
+	if (sig == SIGINT)
+		printf("SIGINT catched\n");
+}
+
+int main()
+{
+	signal(SIGINT, catcher);
+	kill(0, SIGINT);		/* send to caller process group */
+}
