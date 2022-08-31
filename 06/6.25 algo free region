@@ -1,0 +1,21 @@
+	Figure 6.25 Algorithm for Freeing a Region
+-------------------------------------------------------------------------------
+algorithm freereg		/* free an allocated region */
+input:	pointer to a (locked) region
+output:	none
+{
+	if (region reference count non zero) {
+		/* some process still using region */
+		release region lock;
+		if (region has associated inode)
+			release inode lock;
+		return;
+	}
+	if (region has associated inode)
+		release inode (algorithm iput);
+	free physical memory still associated with region;
+	free auxiliary tables assocated with region;
+	clear region fields;
+	place region on region free list;
+	unlock region;
+}
