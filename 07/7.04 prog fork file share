@@ -12,6 +12,10 @@ void rdwrt()
         for (;;) {
                 if (read(fdrd, &c, 1) != 1)
                         return;
+                /*
+                for (int i = 0; i < 100000; i++)
+                        ;
+                */
                 write(fdwt, &c, 1);
         }
 }
