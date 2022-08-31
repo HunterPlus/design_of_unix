@@ -1,0 +1,20 @@
+	Figure 6.19 Algorithm for Attachreg
+------------------------------------------------------------------------------
+algorithm attachreg		/* attach a region to a process */
+input:	(1) pointer to (locked) region being attached
+	(2) process to which region is being attached
+	(3) virtual address in process where region will be attached
+	(4) region type
+output:	per process region table entry
+{
+	allocate per process region table entry for process;
+	initialize per process region table entry:
+		set pointer to region being attached;
+		set type field;
+		set virtual address field;
+	check legality of virtual address, region size;
+	increment region reference count;
+	increment process size according to attached region;
+	initialize new hardware register triple for process;
+	return (per process region table entry);
+}
