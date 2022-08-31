@@ -1,0 +1,21 @@
+	Figure 6.21 Algorithm Growreg for Changing the Size of a Region
+--------------------------------------------------------------------------------------------
+algorithm growreg		/* changing the size of a region */
+input:	(1) pointer to per process region table entry
+	(2) changing in size of region (may be positive or negative)
+output:	none
+{
+	if (region size increasing) {
+		check legality of new region size;
+		allocate auxiliary tables (page tables);
+		if (not system supporinting demand paging) {
+			allocate physical memory;
+			initialize auxiliary tables, as necessary;
+		}
+	} else {	/* region size decreasing */
+		free physical memory, as appropriate;
+		free auxiliary tables, as appropriate;
+	}
+	do (other) initialization of auxiliary tables, as necessary;
+	set size field in process table;
+}
