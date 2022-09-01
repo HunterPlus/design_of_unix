@@ -1,0 +1,20 @@
+        Figure 7.16 Algorithm for Wait
+-----------------------------------------------------------------
+algorithm wait
+input:  address of variable to store status of exiting process
+output: child ID, child exit code
+{
+        if (waiting process has no child process)
+                return (error);
+        for (;;) {      /* loop until return from inside loop */
+                if (waiting process has zombie child) {
+                        pick arbitrary zombie child;
+                        add child CPU usage to parent;
+                        free child process table entry;
+                        return (child ID, child exit code);
+                }
+                if (process has no children)
+                        return error;
+                sleep at interruptible priority (event child process exits);
+        }
+}
