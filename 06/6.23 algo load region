@@ -16,7 +16,7 @@ output:	none
 		target virtual address where data is read to,
 		start offset value for reading file,
 		count of bytes to read from file.
-	read file into region (internal variant of rad algorithm);
+	read file into region (internal variant of read algorithm);
 	lock region;
 	mark region state: completely loaded into memory;
 	awaken all processes waiting for region to be loaded;
