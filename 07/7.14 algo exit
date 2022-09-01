@@ -12,7 +12,7 @@ output: none
         close all open files (internal version of algorithm close);
         release current directory (algorithm iput);
         release current (changed) root, if exists (algorithm iput);
-        free regions, memory associated with process (algorith freereg);
+        free regions, memory associated with process (algorithm freereg);
         write accounting record;
         make process state zombie;
         assign parent process ID of all child processes to be init process (1);
