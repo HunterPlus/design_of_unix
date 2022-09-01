@@ -1,0 +1,19 @@
+	Figure 7.15 Example of Exit
+----------------------------------------------------------------------------
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+
+int main()
+{
+        int     child;
+        
+        if ((child = fork()) == 0) {
+                printf("child PID from child %d\n", getpid());
+                pause();        /* suspend execution until signal */
+        }
+        /* parent process */
+        sleep(5);
+        printf("child PID %d\n", child);
+        exit(child);
+}
