@@ -1,0 +1,21 @@
+	Figure 7.13 Sample Use of Setpgrp
+-------------------------------------------------------------------------
+#include <stdio.h>
+#include <signal.h>
+#include <unistd.h>
+
+int main()
+{
+        int     i;
+        
+        setpgrp();
+        for (i = 0; i < 10; i++) {
+                if (fork() == 0) {      /* child proc */
+                        if (i & 1)
+                                setpgrp();
+                        printf("#%d pid = %d\tpgrp = %d\n", i, getpid(), getpgrp());
+                        pause();        /* sys call to suspend execution */
+                }
+        }
+        kill(0, SIGINT);
+}
