@@ -1,0 +1,49 @@
+        Figure 7.27 Use of Brk and Sample Output
+------------------------------------------------------------------------------
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <signal.h>
+
+char    *cp;
+int     callno;
+
+void catcher(int signo)
+{
+        callno++;
+        printf("caught sig %d %2dth call at addr %p\n", signo, callno, cp);
+        sbrk(1024);
+        /* signal(SIGSEGV, catcher); */
+        if (callno > 18)
+                exit(0);
+}
+int main()
+{
+        signal(SIGSEGV, catcher);
+        cp = sbrk(0);
+        printf("original brk value %p\n", cp);
+        for (;;)
+                *cp++ = 1;
+}
+-----------------------------------------------------------------------------------
+output:
+original brk value 0x5578de538000
+caught sig 11  1th call at addr 0x5578de559001
+caught sig 11  2th call at addr 0x5578de55a001
+caught sig 11  3th call at addr 0x5578de55a001
+caught sig 11  4th call at addr 0x5578de55a001
+caught sig 11  5th call at addr 0x5578de55a001
+caught sig 11  6th call at addr 0x5578de55b001
+caught sig 11  7th call at addr 0x5578de55b001
+caught sig 11  8th call at addr 0x5578de55b001
+caught sig 11  9th call at addr 0x5578de55b001
+caught sig 11 10th call at addr 0x5578de55c001
+caught sig 11 11th call at addr 0x5578de55c001
+caught sig 11 12th call at addr 0x5578de55c001
+caught sig 11 13th call at addr 0x5578de55c001
+caught sig 11 14th call at addr 0x5578de55d001
+caught sig 11 15th call at addr 0x5578de55d001
+caught sig 11 16th call at addr 0x5578de55d001
+caught sig 11 17th call at addr 0x5578de55d001
+caught sig 11 18th call at addr 0x5578de55e001
+caught sig 11 19th call at addr 0x5578de55e001

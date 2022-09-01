@@ -1,0 +1,16 @@
+        Figure 7.26 Algorithm for Brk
+---------------------------------------------------------------------
+algorithm brk 
+input:  new break value
+output: old break value
+{
+        lock process data region;
+        if (region size increasing)
+                if (new region size is illegal) {
+                        unlock data region;
+                        return (error);
+                }
+        change region size (algorithm growreg);
+        zero out addresses in new data space;
+        unlock process data region;
+}
