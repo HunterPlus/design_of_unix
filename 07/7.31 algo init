@@ -1,0 +1,26 @@
+        Figure 7.31. Algorithm for Init 
+-----------------------------------------------------------------------
+algorithm init          /* init process, process 1 of the system */
+input:  none
+output: none 
+{
+        fd = open("/etc/inittab", O_RDONLY);
+        while (line_read(fd, buffer)) {
+                /* read every line of file */
+                if (invoked state != buffer state)
+                        continue;       /* loop back to while */
+                /* state matched */
+                if (fork() == 0) {
+                        execl("proces specified in buffer");
+                        exit(0);
+                }
+                /* init process does not wait */
+                /* loop back to while */
+        }
+        while ((id = wait((int *)0)) != -1) {
+                /* check here if a spawned child died;
+                 * consider respawning it; 
+                 * otherwise, just continue
+                 */
+        }
+}
