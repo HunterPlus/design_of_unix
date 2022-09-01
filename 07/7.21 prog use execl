@@ -1,0 +1,12 @@
+	Figure 7.21 Use of Exec
+---------------------------------------------------------
+#include <unistd.h>
+#include <sys/wait.h>
+
+int main()
+{
+        int     status;
+        if (fork() == 0)
+                execl("/bin/date", "date", NULL);
+        wait(&status);
+}
