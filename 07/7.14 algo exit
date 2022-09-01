@@ -1,0 +1,22 @@
+        Figure 7.14 Algorithm for Exit
+---------------------------------------------------------------
+algorithm exit
+input:  return code for parent process
+output: none
+{
+        ignore all signals;
+        if (process group leader with associated control terminal) {
+                send hangup signal to all members of process group;
+                reset process group for all members to 0;
+        }
+        close all open files (internal version of algorithm close);
+        release current directory (algorithm iput);
+        release current (changed) root, if exists (algorithm iput);
+        free regions, memory associated with process (algorith freereg);
+        write accounting record;
+        make process state zombie;
+        assign parent process ID of all child processes to be init process (1);
+                if any children were zombie, sen death of child signal to init;
+        send death of child signal to parent process;
+        context switch;
+}
