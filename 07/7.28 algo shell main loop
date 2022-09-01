@@ -41,6 +41,6 @@ while (read(stdin, buffer, numchars)) {
         /* parent continues over here...
          * waits for child to exit if required
          */
-        if (amper == 1)
+        if (amper == 0)
                 retid = wait(&status);
 }
