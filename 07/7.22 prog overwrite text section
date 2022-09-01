@@ -1,0 +1,30 @@
+        Figure 7.22 Example of Program Overwriting its Text
+-----------------------------------------------------------------------------
+#include <stdio.h>
+#include <stdlib.h>
+#include <signal.h>
+
+int f() {}
+
+void sigcatch(int n)
+{
+        /*
+         * Signal 11 SIGSEGV, also known as segmentation violation 
+         * means that the program accessed a memory location 
+         * that was not assigned to it.
+         */
+        printf("caught sig %d\n", n);
+        exit(1);
+}
+
+int main()
+{
+        int     i, *ip;
+        
+        ip = (int *)f;          /* assign ip to address of function f */
+        for (i = 0; i < 20; i++)
+                signal(i, sigcatch);
+        *ip = 1;                /* attempt to overwrite address of f */
+        printf("after assign to ip\n");
+        f();
+}
