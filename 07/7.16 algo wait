@@ -1,5 +1,5 @@
         Figure 7.16 Algorithm for Wait
------------------------------------------------------------------
+------------------------------------------------------------------------
 algorithm wait
 input:  address of variable to store status of exiting process
 output: child ID, child exit code
