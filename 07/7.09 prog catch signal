@@ -38,7 +38,7 @@ _catcher()
 	107:	halt
 _kill()
 	108:
-# next line traps into kernal
+# next line traps into kernel
 	10a:	chmk	$0x25
 	10c:	bgequ	0x6 <0x114>
 	10e:	jmp	0x14(pc)
