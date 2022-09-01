@@ -1,0 +1,53 @@
+        Figure 7.25 Example of Execution of Setuid Program
+---------------------------------------------------------------------------
+#include <stdio.h>
+#include <fcntl.h>
+#include <unistd.h>
+
+int main()
+{
+        int     uid, euid, fdmjb, fdmaury;
+
+        uid = getuid();         /* get real UID */
+        euid = geteuid();       /* get effective UID */
+        printf("uid %d euid %d\n", uid, euid);
+
+        fdmjb = open("mjb", O_RDONLY);
+        fdmaury = open("maury", O_RDONLY);
+        printf("fdmjb %d fdmaury %d\n", fdmjb, fdmaury);
+
+        setuid(uid);
+        printf("after setuid(%d): uid %d euid %d\n", getuid(), geteuid());
+
+        fdmjb = open("mjb", O_RDONLY);
+        fdmaury = open("maury", O_RDONLY);
+        printf("fdmjb %d fdmaury %d\n", fdmjb, fdmaury);
+
+        setuid(euid);
+        printf("after setuid(%d): uid %d euid %d\n", euid, getuid(), geteuid());
+}
+-----------------------------------------------------------------------------------
+executable file owner:  maury
+setuid: on
+
+user:   maury
+uid:    8319
+file:   "maury" O_RDONLY
+
+user:   mjb 
+uid:    5088
+file:   "mjb"   O_RDONLY
+---------------------------------------------------------------------------------------
+output from mjb:
+        uid 5088 euid 8319
+        fdmjb -1 fdmaury 3
+        after setuid(5088): uid 5088 euid 5088
+        fdmjb 4 fdmaury -1
+        after setuid(8319): uid 5088 euid 8319
+output from maury:
+        uid 8319 euid 8319
+        fdmjb -1 fdmaury 3
+        after setuid(8319): uid 8319 euid 8319
+        fdmjb -1 fdmaury 4
+        after setuid(8319): uid 8319 euid 8319
+----------------------------------------------------------------------------------------

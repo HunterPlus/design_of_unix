@@ -1,0 +1,38 @@
+        Figure 7.23 Algorithm for Allocation of Text Regions
+------------------------------------------------------------------------------------------
+algorithm xalloc                /* allocate and initialize text region */
+input:  inode of executable file
+output: none
+{
+        if (executable file does not have separate text region)
+                return;
+        if (text region associated with text of inode) {
+                /* text region already exists...attach to it */
+                lock region;
+                while (contents of region not ready yet) {
+                        /* manipulation of reference count prevents total
+                         * removal of the region.
+                         */
+                        increment region reference count;
+                        unlock region;
+                        sleep(event contents of region ready);
+                        lock region;
+                        decrement region reference count;
+                }
+                attach region to process (algorithm attachreg);
+                unlock region;
+                return;
+        }
+        /* no such text region exists---create one */
+        allocate text region (algorithm allocreg);      /* region is locked */
+        if (inode mode has sticky bit set)
+                turn on region sticky flag;
+        attach region to virtual address indicated by inode file header
+                        (algorithm attachreg);
+        if (file specially formatted for paging system)
+                /* Chapter 9 discusses this case */
+        else    /* not formatted for paging system */
+                read file text into region (algorithm loadreg);
+        change region protection in per process region table to read only;
+        unlock region;
+}
