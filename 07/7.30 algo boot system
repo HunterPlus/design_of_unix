@@ -1,0 +1,31 @@
+        Figure 7.30. Algorithm for Booting the System
+---------------------------------------------------------------------------------
+algorithm start                 /* system startup procedure */
+input:  none
+output: none
+{
+        initialize all kernel data structures;
+        pseudo-mount of root;
+        hand-craft environment of process 0;
+        fork process 1:
+        {
+                /* process 1 in here */
+                allocate region;
+                attach region to init address space;
+                grow region to accommodate code about to copy in;
+                copy code from kernel space to init user space to exec init;
+                change mode: return from kernel to user mode;
+                /* init never gets here---as result of above change mode,
+                 * init exec's /etc/init and becomes a "normal" user  process
+                 * with respect to invocation of system calls
+                 */                
+        }
+        /* proc 0 continues here */
+        fork kernel processes;
+        /* process 0 invokes the swapper to manage the allocation of
+         * process address space to main memory and the swap devices.
+         * This is an infinite loop; process 0 usually sleeps in the
+         * loop unless there is work for it to do.
+         */
+        execute code for swapper algorithm;
+}
