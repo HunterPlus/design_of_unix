@@ -1,0 +1,24 @@
+        Figure 7.19 Algorithm for Exec
+---------------------------------------------------------------------
+algorithm exec
+input:  (1) file name
+        (2) parameter list
+        (3) environment variables list
+output: none
+{
+        get file inode (algorithm namei);
+        verify file executable, user has permission to execute;
+        read file headers, check that it is a load module;
+        copy exec parameters from old address space to system space;
+        for (every region attached to process)
+                detach all old regions (algorithm detach);
+        for (every region specified in load module) {
+                allocate new region (algorithm allocreg);
+                attach the regions (algorithm attachreg);
+                load region into memory if appropriate (algorithm loadreg);
+        }
+        copy exec parameters into new user stack region;
+        special processing for setuid programs, tracing;
+        initialize user register save area for return to user mode;
+        release inode of file (algorithm iput);
+}
