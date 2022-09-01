@@ -1,0 +1,19 @@
+	Figure 7.18 Example Depicting the Reason for Death of Child Signal
+-------------------------------------------------------------------------------------------
+#include <stdio.h>
+#include <stdlib.h>
+#include <signal.h>
+#include <unistd.h>
+
+int main(int argc, char *argv[])
+{
+        char    buf[256];
+        
+        if (argc != 1)
+                signal(SIGCLD, SIG_IGN);        /* ignore death of children */
+        while (read(0, buf, 256))
+                if (fork() == 0) {
+                        /* child proc here typically does something with buf */
+                        exit(0);
+                }
+}
