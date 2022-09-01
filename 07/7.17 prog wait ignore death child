@@ -1,0 +1,22 @@
+	Figure 7.17 Example of Wait and Ignoring Death of Child Signal
+----------------------------------------------------------------------------------
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <signal.h>
+#include <sys/wait.h>
+
+int main(int argc, char *argv[])
+{
+        int     i, ret_val, ret_code;
+        
+        if (argc > 1)
+                signal(SIGCLD, SIG_IGN);        /* ignore death of children */
+        for (i = 0; i < 15; i++)
+                if (fork() == 0) {      /* child proc here */
+                        printf("child proc %d\n", getpid());
+                        exit(i);
+                }
+        ret_val = wait(&ret_code);
+        printf("wait ret_val %d\tret_code %d\n", ret_val, ret_code/256);
+}
