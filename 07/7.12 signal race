@@ -1,0 +1,30 @@
+	Figure 7.12 Program Demonstrating Race Condition in Catching Signals
+----------------------------------------------------------------------------------------------
+#include <stdio.h>
+#include <stdlib.h>
+#include <signal.h>
+#include <unistd.h>
+
+void sigcatcher(int sig)
+{
+        printf("PID %d caught one\n", getpid());        /* print process id */
+        //signal(SIGINT, sigcatcher);
+}
+int main()
+{
+        int     ppid;
+        
+        signal(SIGINT, sigcatcher);
+        printf("parent process ID: %d\n\n", getpid());
+        if (fork() == 0) {
+                /* give enough time for both procs to set up */
+                sleep(5);       	/* lib function to delay 5 secs */
+                ppid = getppid();       /* get parent id */
+                for (;;)
+                        if (kill(ppid, SIGINT) == -1)
+                                exit(0);
+        }
+        /* lower priority, greater chance of exhibiting race */
+        nice(10);
+        for (;;);
+}
