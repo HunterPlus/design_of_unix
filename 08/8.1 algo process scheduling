@@ -1,0 +1,16 @@
+        Figure 8.1 Algorithm for Process Scheduling
+-------------------------------------------------------------------------------
+algorithm schedule process
+input:  none
+output: none
+{
+        while (no process picked to execute) {
+                for (every process on run queue)
+                        pick highest priority process that is loaded in memory;
+                if (no process eligible to execute)
+                        idle the machine;
+                        /* interrupt takes machine out of idle state */
+        }
+        remove chosen process from run queue;
+        switch context to that of chosen process, resume its executing;
+}
