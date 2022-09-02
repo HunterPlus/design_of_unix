@@ -1,0 +1,28 @@
+        Figure 8.9. Algorithm for the Clock Handler
+----------------------------------------------------------------------------
+algorithm clock 
+input:  none
+output: none
+{
+        restart clock;          /* so that it will interrupt again */
+        if (callout table not empty) {
+                adjust callout times;
+                schedule callout function if time elapsed;
+        }
+        if (kernel profiling on)
+                note program counter at time of interrupt;
+        if (user profiling on)
+                note program counter at time of interrupt;
+        gather system statistics;
+        gather statistics per process;
+        adjust measure of process CPU utilitization;
+        if (1 second or more since last here and interrupt not in critical region of code) {
+                for (all processes in the system) {
+                        adjust alarm time if active;
+                        adjust measure of CPU utilization;
+                        if (process to execute in user mode)
+                                adjust process priority;
+                }
+                wakeup swapper process is necessary;
+        }
+}
