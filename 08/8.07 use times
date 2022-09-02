@@ -10,7 +10,7 @@ int child(int);
 int main()
 {
         int     i;
-        /* tms is data structure containing the 4 time elemets */
+        /* tms is data structure containing the 4 time elements */
         struct tms pb1, pb2;
         long    pt1, pt2;
         
