@@ -1,0 +1,46 @@
+        Figure 8.12 Program Invoking Profil System Call
+-------------------------------------------------------------------------------
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <signal.h>
+
+void f(), g();
+void theend(int);               /* signal */
+
+unsigned short buffer[4096];
+int main()
+{
+        int     scale, text;
+        unsigned long offset, endof, eff, gee;
+        
+        signal(SIGINT, theend);        
+        endof = (unsigned long) theend;
+        offset = (unsigned long) main;
+        /* calculates number of words of program text */
+        text = (endof - offset + sizeof(short) - 1) / sizeof(short);
+        scale = 0xffff;
+        printf("offset %lu endof %lu text %d\n", offset, endof, text);
+        eff = (unsigned long) f;
+        gee = (unsigned long) g;
+        printf("f %lu g %lu fdiff %ld gdiff %ld\n", eff, gee, (eff-offset)/2, (gee-offset)/2);
+        profil(buffer, sizeof(short) * text, offset, scale); 
+        for (;;) {
+                f();
+                g();
+        }
+        
+}
+
+void f() {}
+void g() {}
+void theend(int signo)
+{
+        int     i;
+
+        for (i = 0; i < 4096; i++)
+                if (buffer[i])
+                        printf("buf[%d] = %d\n", i, buffer[i]);
+        printf("SIGINT exit\n");
+        exit(0);
+}
