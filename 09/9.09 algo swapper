@@ -1,0 +1,35 @@
+        Figure 9.9 Algorithm for the Swapper
+----------------------------------------------------------------------------------
+algorithm swapper               /* 
+                                 * swap in swapped out process,
+                                 * swap out other process to make room
+                                 */
+intput: none
+output: none
+{
+loop:
+        for (all swapped out processes that are ready to run)
+                pick process swapped out longest;
+        if (no such process) {
+                sleep(event must swap in);
+                goto loop;
+        }
+        if (enough room in main memory for process) {
+                swap process in;
+                goto loop;
+        }
+        /* loop2: choose swap out, here in revised algorithm */
+        for (all processes loaded in main memory, not zombie and not locked in memory) {
+                if (there is a sleeping process)
+                        choose process such that priority + residence time
+                                        is numerically highest;
+                else            /* no sleeping processes */
+                        choose process such that residence time + nice
+                                        is numerically highest;
+        }
+        if (chosen process not sleeping or residency requirements not satisfied)
+                sleep(event must swap rpocess in);
+        else 
+                swap out process;
+        goto loop;      /* goto loop2 in revised algorithm */
+}

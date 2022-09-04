@@ -1,0 +1,19 @@
+        Figure 9.2 Algorithm for Allocating Space from Maps
+----------------------------------------------------------------------------------------
+algorithm malloc                /* algorithm to allocate map space */
+input:  (1) map address         /* indicates which map to use */
+        (2) requested number of units
+output: address, if successful
+        0, otherwise
+{
+        for (every map entry) {
+                if (current map entry can fit requested units) {
+                        if (requested units == number of units in entry)
+                                delete entry from map;
+                        else
+                                adjust start address of entry;
+                        return (original address of entry);
+                }
+        }
+        return (0);
+}
