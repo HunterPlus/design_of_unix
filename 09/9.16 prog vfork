@@ -1,0 +1,20 @@
+        Figure 9.16 vfork and Corruption of Process Memory
+---------------------------------------------------------------------------------
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+
+int     global;
+int main()
+{
+        int     local;
+
+        local = 1;
+        if (vfork() == 0) {     /* child */
+                global = 2;     /* write parent data space */
+                local = 3;      /* write parent stack */
+                _exit(0);
+        }
+        printf("global %d local %d\n", global, local);
+        return 0;
+}
