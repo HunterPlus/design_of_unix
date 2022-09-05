@@ -1,0 +1,31 @@
+        Figure 10.8 Reading Disk Data Using Block and Raw Interface
+-----------------------------------------------------------------------------------
+#include <stdio.h>
+#include <stdlib.h>
+#include <fcntl.h"
+#include <unistd.h"
+
+int main()
+{
+        char    buf1[4096], buf2[4096];
+        int     fd1, fd2, i;
+
+        if (((fd1 = open("/dev/dsk5", O_RDONLY)) == -1) || ((fd2 = open("/dev/rdsk5", O_RDONLY)) == -1)) {
+                printf("failure on open\n");
+                exit(1);
+        }
+        lseek(fd1, 8192L, 0);
+        lseek(fd2, 8192L, 0);
+
+        if ((read(fd1, buf1, sizeof(buf1)) == -1) || (read(fd2, buf2, sizeof(buf2)) == -1)) {
+                printf("failure on read\n");
+                exit(1);
+        }
+        for (i = 0; i < sizeof(buf1); i++)
+                if (buf1[i] != buf2[i]) {
+                        printf("different at offset %d\n", i);
+                        exit(1);
+                }
+        printf("reads match\n");
+        return 0;
+}

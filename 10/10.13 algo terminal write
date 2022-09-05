@@ -1,0 +1,15 @@
+        Figure 10.13 Algorithm for Writing Data to a Terminal
+----------------------------------------------------------------------------------
+algorithm terminal_write
+{
+        while (more data to be copied from user space) {
+                if (tty flooded with output data) {
+                        start write operation to hardware with data on output clist;
+                        sleep (event: tty can accept more data);
+                        continue;       /* back to while loop */
+                }
+                copy cblock size of data from user space to output clist;
+                                line discipline converts tab characters, etc;
+        }
+        start write operation to hardware with data on output clist;
+}
