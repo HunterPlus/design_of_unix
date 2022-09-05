@@ -1,0 +1,29 @@
+        Figure 9.25 Algorithm for Protection Fault Handler
+------------------------------------------------------------------------------------
+algorithm pfault        /* protection fault handler */
+input:  address where process faulted
+output: none
+{
+        find region, page table entry, disk block descriptor,
+                        page frame for address, lock region;
+        if (page not valid in memory)
+                goto out;
+        if (copy on write bit not set)
+                goto out;       /* real program error - signal */
+        if (page frame reference count > 1) {
+                allocate a new physical page;
+                copy contents of old page to new page;
+                decrement old page frame reference count;
+                update page table entry to point to new physical page;
+        } else {        /* "steal" page, since nobody else is using it */
+                if (copy of page exists on swap device)
+                        free space on swap device, break page association;
+                if (page is on page hash queue)
+                        remove from hash queue;
+        }
+        set modify bit, clear copy on write bit in page table entry;
+        recalculate process priority;
+        check for signals;
+out:
+        unlock region;
+}
