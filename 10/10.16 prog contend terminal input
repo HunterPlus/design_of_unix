@@ -1,0 +1,27 @@
+        Figure 10.16 Contending for Terminal Input Data
+-----------------------------------------------------------------------------------
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+
+char    input[256];
+int main()
+{
+        int     i;
+
+        for (i = 0; i < 18; i++) {
+                switch (fork()) {
+                case -1:        /* error */
+                        printf("error cannot fork\n");
+                        exit(1);
+                default:        /* parent process */
+                        break;
+                case 0:         /* child process */
+                        for (;;) {
+                                read(0, input, 256);    /* read line */
+                                printf("%d read %s\n", i, input);
+                        }
+                }
+        }
+        return 0;
+}
