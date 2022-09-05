@@ -1,0 +1,27 @@
+        Figure 10.4 Algorithm for Closing a Device
+------------------------------------------------------------------------------
+algorithm close         /* for devices */
+input:  file descriptor
+output: none
+{
+        do regular close algorithm (chapter 5xxx);
+        if (file table reference count not 0)
+                goto finish;
+        if (there is another open file and its major, minor numbers
+                        are same as device being closed)
+                goto finish;            /* not last close after all */
+        if (character device) {
+                use major number to index into character device switch table;
+                call driver close routine: parameter minor number;
+        }
+        if (block device) {
+                if (device mounted)
+                        goto finish;
+                write device blocks in buffer cache to device;
+                use major number to index into block device switch table;
+                call driver close routine: parameter minor number;
+                invalidate device blocks still in buffer cache;
+        }
+finish:
+        release inode;
+}
