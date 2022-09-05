@@ -1,0 +1,18 @@
+        Figure 10.19 Algorithm for Logging In
+---------------------------------------------------------------------------------
+algorithm login         /* procedure for logging in */
+{
+        getty process executes:
+        set process group (setpgrp system call);
+        open tty line;          /* sleeps until opened */
+        if (open successful) {
+                exec login program;
+                prompt for user name;
+                turn off echo, prompt for password;
+                if (successful) {       /* matches password in /etc/passwd */
+                        put tty in canonical mode (ioctl);
+                        exec shell;
+                } else
+                        count login attempts, try again up to a point;
+        }
+}
