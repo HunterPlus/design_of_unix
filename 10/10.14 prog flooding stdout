@@ -1,0 +1,30 @@
+        Figure 10.14 Flooding Standard Output with Data
+---------------------------------------------------------------------------------
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <string.h>
+
+char    form[] = "this is a sample output string from child ";
+int main()
+{
+        char    output[128];
+        int     i;
+
+        for (i = 0; i < 18; i++) {
+                switch (fork()) {
+                case -1:        /* error --- hit max procs */
+                        exit(1);
+                default:        /* parent process */
+                        break;
+                case 0:         /* child process */
+                        /* format output string in variable output */
+                        i = sprintf(output, "%s%d\n%s%d\n", form, i, form, i);
+                        output[i] = 0;
+                        for (i = 0; i < 10; i++)
+                                write(1, output, strlen(output));
+                        exit(0);
+                }
+        }
+        return 0;
+}
