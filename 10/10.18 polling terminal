@@ -1,0 +1,27 @@
+        Figure 10.18 Polling a Terminal 
+----------------------------------------------------------------------------
+#include <stdio.h>
+#include <stdlib.h>
+#include <fcntl.h>
+#include <unistd.h>
+
+int main()
+{
+        int     i, n;
+        int     fd;
+        char    buf[256];
+
+        /* open terminal read-only with no-delay option */
+        if ((fd = open("/dev/tty", O_RDONLY | O_NDELAY)) == -1)
+                exit(1);
+        n = 1;
+        for (;;) {      /* for ever */
+                for (i = 0; i < n*n*n; i++)
+                        ;
+                if (read(fd, buf, sizeof(buf)) > 0) {
+                        printf("read at n %d\n", n);
+                        n--;
+                } else          /* no data read; returns due to no-delay */
+                        n++;
+        }
+}
