@@ -1,0 +1,40 @@
+        Figure 10.17 Raw Mode - Reading 5-Character Bursts
+-------------------------------------------------------------------------------
+#include <stdio.h>
+#include <stdlib.h>
+#include <signal.h>
+#include <termio.h>
+#include <unistd.h>
+
+struct termio savetty;
+void sigcatch(int sig)
+{
+        ioctl(0, TCSETAF, &savetty);
+        exit(0);
+}
+int main()
+{
+        struct termio newtty;
+        int     nrd;
+        char    buf[32];
+
+        signal(SIGINT, sigcatch);
+        if (ioctl(0, TCGETA, &savetty) == -1) {
+                printf("ioctl failed: not a tty\n");
+                exit(1);
+        }
+        newtty = savetty;
+        newtty.c_lflag &= ~ICANON;      /* turn off canonical mode */
+        newtty.c_lflag &= ~ECHO;        /* turn off character echo */
+        newtty.c_cc[VMIN] = 5;          /* minimum 5 chars */
+        newtty.c_cc[VTIME] = 100;       /* 10 sec interval */
+        if (ioctl(0, TCSETAF, &newtty) == -1) {
+                printf("cannot put tty into raw mode\n");
+                exit(1);
+        }
+        for (;;) {
+                nrd = read(0, buf, sizeof(buf));
+                buf[nrd] = 0;
+                printf("read %d chars '%s'\n", nrd, buf);
+        }
+}
