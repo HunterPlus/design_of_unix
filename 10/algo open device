@@ -1,0 +1,25 @@
+        Figure 10.3 Algorithm for Opening a Device
+------------------------------------------------------------------------------
+algorithm open          /* for device drivers */
+input:  pathname
+        openmode
+output: file descriptor
+{
+        convert pathname to inode, increment inode reference count,
+        allocate entry in file table, user file descriptor,
+                        as in open of regular file;
+        
+        get major, minor number from inode;
+        save context (algorithm setjmp) in case of long jump from driver;
+        if (block device) {
+                use major number as index to block device switch table;
+                call driver open procedure for index:
+                                pass minor number, open modes;
+        } else {
+                muse major number as index to character device switch table;
+                call driver open procedure for index:
+                                pass minor number, open modes;
+        }
+        if (open fails in driver)
+                decrement file table, inode counts;
+}
