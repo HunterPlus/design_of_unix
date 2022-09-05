@@ -1,0 +1,28 @@
+        Figure 10.15 Algorithm for Reading a Terminal
+--------------------------------------------------------------------------------------
+algorithm terminal_read
+{
+        if (no data on canonical clist) {
+                while (no data on raw clist) {
+                        if (tty opened with no delay option)
+                                return;
+                        if (tty in raw mode based on timer and timer not active)
+                                arrange for timer wakeup (callout table);
+                        sleep(event: data arrives from terminal);
+                }
+                /* there is data on raw clist */
+                if (tty in raw mode)
+                        copy all data from raw clist to canonical clist;
+                else {          /* tty is in canonical mode */
+                        while (characters on raw clist) {
+                                copy one character at a time from raw clist
+                                                to canonical clist:
+                                                do erase, kill processing;
+                                if (char is carriage return or end-of-file)
+                                        break;          /* out of while loop */
+                        }
+                }
+        }
+        while (characters on canonical list and read count not satisfied)
+                copy from cblocks on canonical list to user address space;
+}
