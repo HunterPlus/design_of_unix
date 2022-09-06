@@ -1,0 +1,27 @@
+        Figure 11.6. A Client Process
+------------------------------------------------------------------------------
+#include <stdio.h>
+#include <sys/msg.h>
+#include <unistd.h>
+
+#define MSGKEY 75
+
+struct msgform {
+        long    mtype;
+        char    mtext[256];
+};
+int main()
+{
+        struct msgform msg;
+        int     msgid, pid, *pint;
+
+        msgid = msgget(MSGKEY, 0777);
+        pid = getpid();
+        pint = (int *) msg.mtext;
+        *pint = pid;            /* copy pid into message text */
+        msg.mtype = 1;
+
+        msgsnd(msgid, &msg, sizeof(int), 0);
+        msgrcv(msgid, &msg, 256, pid, 0);       /* pid is used as the msg type */
+        printf("client: receive from pid %d\n", *pint);
+}
