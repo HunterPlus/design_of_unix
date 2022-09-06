@@ -1,0 +1,32 @@
+        Figure 10.24 Pseudo-code for Multiplexing Windows
+----------------------------------------------------------------------------
+/* assume file descriptors 0 and 1 already refer to physical tty */
+for (;;) {      /* loop */
+        select(input);          /* wait for some line with  input */
+        read input line;
+        switch (line with input data) {
+        case physical tty:              /* input on physical tty line */
+                if (control command) {  /* e.g. create new window */
+                        open a free pseudo-tty;
+                        fork a new process:
+                        if (parent) {
+                                push a msg discipline on mpx side;
+                                continue;       /* back to for loop */
+                        }
+                        /* child here */
+                        close unnecessary file descriptors;
+                        open other member of pseudo-tty pair, get
+                                        stdin, stdout, stderr;
+                        push tty line discipline;
+                        exec shell;     /* looks like virtual tty */
+                }
+                /* "regular" data from tty coming up for virtual tty */
+                demultiplex data read from physical tty, strip off
+                                headers and write to appropriate pty;
+                continue;               /* back to for loop */
+        case logical tty:               /* a virtual tty is writing a window */
+                encode header indicating what window data is for;
+                write header and data to physical tty;
+                continue;               /* back to for loop */
+        }
+}
