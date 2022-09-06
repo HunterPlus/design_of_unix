@@ -1,0 +1,15 @@
+        Figure 11.1 Structure of Debugging Process
+-----------------------------------------------------------------
+if ((pid = fork()) == 0) {
+        /* child = traced process */
+        ptrace(0, 0, 0, 0);
+        exec("name of traced process here");
+}
+/* debugger process continue here */
+for (;;) {
+        wait((int *) 0);        /* null */
+        read(input for tracing instructions);
+        ptrace(cmd, pid, ...);
+        if (quitting trace)
+                break;
+}
