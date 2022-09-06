@@ -1,5 +1,7 @@
         Figure 11.2 Trace - A Traced Process
 -----------------------------------------------------------------
+#include <stdio.h>
+
 int data[32];
 int main()
 {
