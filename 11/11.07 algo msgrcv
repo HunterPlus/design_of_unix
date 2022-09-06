@@ -1,0 +1,34 @@
+        Figure 11.7 Algorithm for Receiving a Message 
+--------------------------------------------------------------------------------
+algorithm msgrcv                /* receive message */
+input:  (1) message descriptor
+        (2) address of data array for incoming message
+        (3) size of data array
+        (4) requested message type
+        (5) flags
+output: number of bytes in returned message
+{
+        check permissions;
+loop:
+        check legality of message descriptor;
+        /* find message to return to user */
+        if (requested message type == 0)
+                consider first message on queue;
+        else if (request message type > 0)
+                consider first message on queue with given type;
+        else    /* requested message type < 0 */
+                consider first of the lowest typed messages on queue,
+                                such that its type is <= absolute value of
+                                requested type;
+        if (there is a message) {
+                adjust message size or return error if user size too small;
+                copy message type, text from kernel space to user space;
+                unlink message from queue;
+                return ;
+        }
+        /* no message */
+        if (flags specify not to sleep)
+                return with error;
+        sleep (event message arrives on queue);
+        goto loop;
+}

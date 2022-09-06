@@ -1,0 +1,22 @@
+        Figure 11.4 Algorithm for Msgsnd
+---------------------------------------------------------------------------
+algorithm msgsnd                /* send a message */
+input:  (1) message queue descriptor
+        (2) address of message structure
+        (3) size of message
+        (4) flags
+output: number of bytes sent
+{
+        check legality of descriptor, permissions;
+        while (not enough space to store message) {
+                if (flags specify not to wait)
+                        return;
+                sleep(until event enough space is available);
+        }
+        get message header;
+        read message text from user space to kernel;
+        adjust data structures: enqueue message header,
+                        message header points to data,
+                        counts, time stamps, process ID;
+        wakeup all processes waiting to read message from queue;
+}
