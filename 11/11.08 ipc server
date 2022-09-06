@@ -1,4 +1,4 @@
-        Figure 11.8. A Server Proces
+        Figure 11.8. A Server Process
 -----------------------------------------------------------------------------
 #include <stdio.h>
 #include <stdlib.h>
