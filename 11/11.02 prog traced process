@@ -1,5 +1,8 @@
         Figure 11.2 Trace - A Traced Process
 -----------------------------------------------------------------
+/*
+ * gcc -o trace trace.c -no-pie
+ */
 #include <stdio.h>
 
 int data[32];
@@ -9,5 +12,5 @@ int main()
         
         for (i = 0; i < 32; i++)
                 printf("data[%d] = %d\n", i, data[i]);
-        printf("ptrace data addr 0x%x\n", data);
+        printf("ptrace data addr %p\n", data);
 }
