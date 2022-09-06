@@ -34,6 +34,6 @@ int main()
 }
 void cleanup(int signo)
 {
-        msgctl(msgid, IPC_RMID, 0);
+        msgctl(msgid, IPC_RMID, 0);     /* Immediately remove the message queue */
         exit(0);
 }
