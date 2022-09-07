@@ -1,4 +1,4 @@
-        Figure 11.14 Locking and Unlbcking Operations
+        Figure 11.14 Locking and Unlocking Operations
 -------------------------------------------------------------------------------------
 #include <stdio.h>
 #include <stdlib.h>
