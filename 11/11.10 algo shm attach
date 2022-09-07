@@ -1,0 +1,19 @@
+        Figure 11.10 Algorithm for Attaching Shared Memory
+----------------------------------------------------------------------------------
+algorithm shmat         /* attach shared memory */
+input:  (1) shared memory descriptor
+        (2) virtual address to attach memory
+        (3) flags
+output: virtual address where memory was attached
+{
+        check validity of descriptor, permissions;
+        if (user specified virtual address) {
+                round off virtual address, as specified by flags;
+                check legality of virtual address, size of region;
+        } else          /* user wants kernel to find good address */
+                kernel picks virtual address: error if none available;
+        attach region to process address space (algorithm attachreg);
+        if (region being attached for first time)
+                allocate page tables, memory for region (algorithm growreg);
+        return (virtual address where attached);
+}
