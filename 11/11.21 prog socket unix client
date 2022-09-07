@@ -1,0 +1,22 @@
+        Figure 11.21. A Client Process in the UNIX System Domain
+-----------------------------------------------------------------------------------
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <sys/socket.h>
+
+int main()
+{
+        int     sd, ns;        
+        struct sockaddr sau;        
+
+        sau.sa_family = AF_UNIX;
+        strcpy(sau.sa_data, "sockname");
+
+        sd = socket(AF_UNIX, SOCK_STREAM, 0);
+        if (connect(sd, &sau, sizeof(sau)) == -1)
+                exit(1);
+        
+        write(sd, "hi guy", 6);
+}

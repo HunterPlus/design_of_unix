@@ -1,0 +1,36 @@
+        Figure 11.20 A Server Process in the UNIX System Domain
+-----------------------------------------------------------------------------------------
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <sys/socket.h>
+
+int main()
+{
+        int     sd, ns;
+        char    buf[256];        
+        struct sockaddr sau, sockaddr;
+        int     fromlen;
+
+        sau.sa_family = AF_UNIX;
+        strcpy(sau.sa_data, "sockname");
+
+        sd = socket(AF_UNIX, SOCK_STREAM, 0);        
+        if (bind(sd, &sau, sizeof(sau)) != 0) {         /* create file "sockname" */
+                printf("bind error\n");
+                exit(1);
+        }
+        listen(sd, 1);
+        for (;;) {
+                ns = accept(sd, &sockaddr, &fromlen);
+                if (fork() == 0) {      /* child */
+                        close(sd);
+                        read(ns, buf, sizeof(buf));
+                        printf("server read '%s'\n", buf);
+                        exit(0);
+                }
+                close(ns);
+        }
+}
+
