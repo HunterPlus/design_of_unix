@@ -1,0 +1,48 @@
+        Figure 11.15 Algorithm for Semaphore Operation
+----------------------------------------------------------------------------
+algorithm semop         /* semaphore operations */
+inputs: (1) semaphore descriptor
+        (2) array of semaphore operations
+        (3) number of elements in array
+output: start value of last semaphore operated on
+{
+        check legality of semaphore descriptor;
+start:
+        read array of semaphore operations from user to kernel space;
+        check permissions for all semaphore operations;
+        for (each semaphore operation in array) {
+                if (semaphore operation is positive) {
+                        add "operation" to semaphore value;
+                        if (UNDO flag set on semaphore operation)
+                                update process undo structure;
+                        wakeup all process sleeping (event semaphore value increases);
+                } else if (semaphore operation is negative) {
+                        if ("operation" + semaphore value >= 0) {
+                                add "operation" to semaphore value;
+                                if (UNDO flag set)
+                                        update process undo structure;
+                                if (semaphore value 0)
+                                        wakeup all process sleeping (event semaphore value becomes 0);
+                                continue;
+                        }
+                        reverse all semaphore operations already done this
+                                        system call (previous iterations);
+                        if (flags specify not to sleep)
+                                return with error;
+                        sleep (event semaphore value increases);
+                        goto start;     /* start loop from beginning */
+                } else {        /* semaphore operation is zero */
+                        if (semaphore value none 0) {
+                                reverse all semaphore operations done this
+                                                system call;
+                                if (flags specify not to sleep)
+                                        return with error;
+                                sleep(event semaphore value == 0);
+                                goto start;     /* restart loop */
+                        }
+                }
+        } /* for loop ends here */
+        /* semaphore operations all succeeded */
+        update time stamps, process ID's;
+        return value of last semaphore operated on before call succeeded;
+}
