@@ -1,0 +1,66 @@
+        Figure 11.14 Locking and Unlbcking Operations
+-------------------------------------------------------------------------------------
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/sem.h>
+#include <signal.h>
+#include <unistd.h>
+
+#define SEMKEY  75
+int     semid;
+unsigned int count;
+/* definition of sembuf in file sys/sem.h
+ * struct sembuf {
+ *      unsigned short sem_num;
+ *      short   sem_op;
+ *      short   sem_flg;
+ * };
+ */
+struct sembuf psembuf, vsembuf;         /* ops for P and V */
+int main(int argc, char *argv[])
+{
+        int     i, first, second;
+        short   initarray[2], outarray[2];
+        void    cleanup(int);
+        
+        if (argc == 1) {
+                for (i = 0; i < 20; i++)
+                        signal(i, cleanup);
+                semid = semget(SEMKEY, 2, 0777 | IPC_CREAT);
+                initarray[0] = initarray[1] = 1;
+                semctl(semid, 2, SETALL, initarray);
+                semctl(semid, 2, GETALL, outarray);
+                printf("sem init vals %d %d\n", outarray[0], outarray[1]);
+                pause();        /* sleep until awakened by a signal */
+        } else if (argv[1][0] == 'a') {
+                first = 0;
+                second = 1;
+        } else {
+                first = 1;
+                second = 0;
+        }
+        
+        semid = semget(SEMKEY, 2, 0777);
+        psembuf.sem_op = -1;
+        psembuf.sem_flg = SEM_UNDO;
+        vsembuf.sem_op = 1;
+        vsembuf.sem_flg = SEM_UNDO;
+        
+        for (count = 0; ; count++) {
+                psembuf.sem_num = first;
+                semop(semid, &psembuf, 1);
+                psembuf.sem_num = second;
+                semop(semid, &psembuf, 1);
+                printf("proc %d count %d\n", getpid(), count);
+                vsembuf.sem_num = second;
+                semop(semid, &vsembuf, 1);
+                vsembuf.sem_num = first;
+                semop(semid, &vsembuf, 1);
+        }
+}
+
+void cleanup(int signo)
+{
+        semctl(semid, 2, IPC_RMID, 0);
+        exit(0);
+}
